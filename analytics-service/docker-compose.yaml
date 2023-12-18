@@ -1,0 +1,26 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:4.4
+    ports:
+      - 27018:27018
+    volumes:
+      - ./db:/data/db
+  
+  node:
+    image: node:alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - MONGO_URI=mongodb://mongo:27018
+      - APP_PORT=3000
+    ports:
+      - 3000:3000
+    command: ['/bin/sh', '-c', 'yarn && yarn dev']
+    depends_on:
+      - mongodb
+  
+networks:
+    cafe-microservice:
+      external: true
