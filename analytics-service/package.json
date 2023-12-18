@@ -1,7 +1,10 @@
 {
-  "name": "cafe-back-simple",
+  "name": "analytics-service",
   "version": "1.0.0",
+  "description": "backend service for shop analytics application",
   "main": "index.js",
+  "repository": "https://github.com/Nuttapong9911/Cafe_Cup_Services",
+  "author": "nuttapong9911",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
@@ -11,7 +14,6 @@
   "devDependencies": {
     "nodemon": "^3.0.2"
   },
-
   "scripts": {
     "dev": "nodemon src/index.js"
   }
