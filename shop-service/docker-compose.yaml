@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  
+  mongo-shop:
+    image: mongo:7.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - 27018:27017
+    volumes:
+      - ./mongodata/shop:/data/db
+
+  node:
+    image: node:alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - APP_PORT=4000
+      - MONGO_URI=mongodb://mongo-shop:27017
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - DB_DATABASENAME=shop
+    ports:
+      - 4000:4000
+    command: ['/bin/sh', '-c', 'yarn && yarn dev']
+    depends_on:
+      - mongo-shop
+  
+networks:
+    cafe-microservice:
+      external: true
