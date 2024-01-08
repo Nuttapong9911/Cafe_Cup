@@ -1,4 +1,5 @@
 const Shop = require('../models/shop')
+const bcrypt = require('bcryptjs')
 const subDistrictList = [
   'ศรีภูมิ',
   'พระสิงห์',
@@ -20,13 +21,80 @@ const subDistrictList = [
 
 // const getRandomInt = (max) => Math.floor(Math.random() * max) 
 
-const get = async (req,res) => res.status(200).json(await Shop.find(req.body))
+const get = async (req,res) => {
+  try {
+    res.status(200).json(await Shop.find(req.query))
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
 
-const register = async (req, res) => res.status(200).json(await Shop.create(req.body))
+const register = async (req, res) => {
+  try {
+    if (!(req.body.username && req.body.password && req.body.name)) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
 
-const update = async (req, res) => res.status(200).json(await Shop.findOneAndUpdate({_id: req.body._id}, req.body))
+    if (await Shop.findOne({username: req.body.username})) {
+      throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+    }
 
-const deleteByID = async (req, res) => res.status(200).json(await Shop.findOneAndDelete(req.body))
+    const highestUserId = await Shop.findOne({}).sort({_id: -1}).exec();
+    let userInputs = {
+      _id: highestUserId ? highestUserId._id + 1 : 1,
+      ...req.body,
+      password: await bcrypt.hash(req.body.password, 10),
+    }
+
+    let result = await Shop.create(userInputs)
+    result.password = undefined
+
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const update = async (req, res) => {
+  try {
+    if (!(req.query._id)) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
+    if (!(await Shop.findOne(req.query))) {
+      throw ({name: 'ParameterError', message: 'User not found.'}) 
+    }
+    // RECHECK เคสนี้จะพังถ้า user update username เดิม
+    if (req.body.username && await Shop.findOne({username: req.body.username})) {
+      throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+    }
+    // [ ] needs authen befor do this 
+
+    let userInputs = req.body
+
+    if (userInputs.password) userInputs.password = await bcrypt.hash(req.body.password, 10)
+
+    let result = await Shop.findOneAndUpdate(req.query, userInputs, {new: true})
+    result.password = undefined
+
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const deleteByID = async (req, res) => {
+  try {
+    if (!(req.query._id)) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
+    if (!(await Shop.findOne(req.query))) {
+      throw ({name: 'ParameterError', message: 'User not found.'}) 
+    }
+    res.status(200).json(await Shop.findOneAndDelete(req.query))
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
 
 const calculateShop = async (req, res) => {
   let scores = []
@@ -38,12 +106,14 @@ const calculateShop = async (req, res) => {
   res.status(200).json(scores)
 }
 
-const insertTest = async (req, res) => {
+const randomInsertShop = async (req, res) => {
   const shopNum = 500
   try {
     for (let i = 1; i <= shopNum; i++) {
       await Shop.create({
-        _id: i,
+        _id: i + 1000,
+        username: `user${i}`,
+        password: `pass${i}`,
         name: `shop ${i}`,
         address: {
           subDistrict: subDistrictList[(i % 16)]
@@ -67,7 +137,7 @@ const insertTest = async (req, res) => {
   res.status(200).json({status: 'ok'})
 }
 
-
+// functions
 const calculateTag = async (shop, tag) => {
   switch (tag.key) {
     case 1:
@@ -161,6 +231,6 @@ module.exports = {
   update,
   deleteByID,
 
-  insertTest,
+  randomInsertShop,
   calculateShop
 }

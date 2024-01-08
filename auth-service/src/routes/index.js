@@ -21,7 +21,7 @@ router.delete('/customer/delete', customerController.deleteByID)
 // [ ] route: /logout
 
 // for dev
-router.post('/shop/inserttest', shopController.insertTest)
+router.post('/shop/inserttest', shopController.randomInsertShop)
 router.get('/shop/testScore', shopController.calculateShop)
 
 module.exports = router
