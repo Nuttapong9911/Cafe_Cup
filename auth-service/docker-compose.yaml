@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  
+  auth-mongo:
+    image: mongo:7.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - 27018:27017
+    volumes:
+      - ./mongodata/auth:/data/db
+
+  auth-node:
+    image: node:alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - APP_PORT=3002
+      - MONGO_URI=mongodb://auth-mongo:27017
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - DB_DATABASENAME=auth
+    ports:
+      - 3002:3002
+    command: ['/bin/sh', '-c', 'yarn && yarn dev']
+    depends_on:
+      - auth-mongo
+  
+networks:
+    cafe-microservice:
+      external: true
