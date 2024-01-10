@@ -6,7 +6,8 @@ const router = express.Router()
 
 router.get('/livez', async (req, res) => res.status(200).json({ status: "ok" }))
 
-router.post('/review/add', reviewController.add)
+router.post('/review/add', reviewController.create)
+router.post('/review/addById', reviewController.getById)
 router.get('/review/get', reviewController.get)
 
 router.post('/reach/add', reachController.add)
