@@ -1,6 +1,8 @@
 const express = require('express')
 const shopController = require('../controllers/shopController')
 const customerController = require('../controllers/customerController')
+const recommendController = require('../controllers/recommendController')
+
 const router = express.Router()
 
 // [ ] task: healthcheck
@@ -22,6 +24,8 @@ router.delete('/customer/delete', customerController.deleteByID)
 
 // for dev
 router.post('/shop/inserttest', shopController.randomInsertShop)
-router.get('/shop/testScore', shopController.calculateShop)
+router.post('/customer/inserttest', customerController.randCreateCustomer)
+
+router.get('/customer/recommend', recommendController.calculateShop)
 
 module.exports = router
