@@ -4,7 +4,7 @@ const getRandomInt = require('../libs/randomInt')
 
 const getById = async (req, res) => {
   try {
-    res.status(200).json(await Customer.find(req.query))
+    res.status(200).json(await Customer.findOne(req.query))
   } catch (error) {
     res.status(400).json(error)
   }
