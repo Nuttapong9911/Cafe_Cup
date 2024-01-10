@@ -2,9 +2,17 @@ const Customer = require('../models/customer')
 const bcrypt = require('bcryptjs')
 const getRandomInt = require('../libs/randomInt')
 
-const get = async (req, res) => {
+const getById = async (req, res) => {
   try {
     res.status(200).json(await Customer.find(req.query))
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const get = async (req, res) => {
+  try {
+    res.status(200).json(await Customer.find(req.body))
   } catch (error) {
     res.status(400).json(error)
   }
@@ -25,7 +33,7 @@ const update = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
     if (!(await Customer.findOne(req.query))) {
-      throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+      throw ({name: 'ParameterError', message: 'User not found.'}) 
     }
     // RECHECK เคสนี้จะพังถ้า user update username เดิม
     if (req.body.username && await Customer.findOne({username: req.body.username})) {
@@ -169,6 +177,7 @@ const createCustomer = async (body) => {
 
 
 module.exports = {
+  getById,
   get,
   register,
   update,
