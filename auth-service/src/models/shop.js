@@ -32,7 +32,7 @@ const shopSchema = new mongoose.Schema({
   foodImages: [String],
   otherImages: [String],
   daysOpen: [Number],
-  tiemOpen: { type: String }, //00:00 to 23:59
+  timeOpen: { type: String }, //00:00 to 23:59
   timeClose: { type: String }, //00:00 to 23:59
   singleSeat: { type: Number,  default: 0 },
   doubleSeat: { type: Number,  default: 0  },
