@@ -6,9 +6,11 @@ const router = express.Router()
 
 router.get('/livez', async (req, res) => res.status(200).json({ status: "ok" }))
 
-router.post('/review/add', reviewController.create)
-router.post('/review/addById', reviewController.getById)
+router.post('/review/create', reviewController.create)
+router.get('/review/getById', reviewController.getById)
 router.get('/review/get', reviewController.get)
+router.put('/review/update', reviewController.update)
+router.delete('/review/delete', reviewController.deleteById)
 
 router.post('/reach/add', reachController.add)
 router.get('/reach/get', reachController.get)
