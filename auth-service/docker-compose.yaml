@@ -29,5 +29,5 @@ services:
       - auth-mongo
   
 networks:
-    cafe-microservice:
+    cafemicroservicenetwork:
       external: true
