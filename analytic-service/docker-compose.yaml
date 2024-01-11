@@ -29,5 +29,5 @@ services:
       - analytic-mongo
   
 networks:
-    cafe-microservice:
+    cafemicroservicenetwork:
       external: true

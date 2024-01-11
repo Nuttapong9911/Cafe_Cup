@@ -29,5 +29,5 @@ services:
       - rcmd-mongo
   
 networks:
-    cafe-microservice:
+    cafemicroservicenetwork:
       external: true
