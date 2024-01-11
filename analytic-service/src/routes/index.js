@@ -12,8 +12,13 @@ router.get('/review/get', reviewController.get)
 router.put('/review/update', reviewController.update)
 router.delete('/review/delete', reviewController.deleteById)
 
-router.post('/reach/add', reachController.add)
+router.post('/reach/create', reachController.create)
+router.get('/reach/getById', reachController.getById)
 router.get('/reach/get', reachController.get)
+router.get('/reach/analytic/reachCount', reachController.getReachCountPerHours)
+router.get('/reach/analytic/reachAge', reachController.getReachAgePerHours)
+
+router.post('/reach/inserttest', reachController.createRandomReach)
 
 // [ ] routes for analytics
 

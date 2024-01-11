@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 
 const customerReachSchema = new mongoose.Schema({
-  _shopId: {type: Number},
-  _customerId: {type: Number},
+  _id: {type: Number},
+  _shopId: {type: Number, required: true},
+  _customerId: {type: Number, required: true},
   timestamp: {type: Date}
 }, {
   versionKey: false
