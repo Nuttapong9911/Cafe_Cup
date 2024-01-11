@@ -29,5 +29,6 @@ services:
       - promotion-mongo
   
 networks:
-    cafemicroservicenetwork:
-      external: true
+    default:
+        external:
+            name: cafemicroservicenetwork
