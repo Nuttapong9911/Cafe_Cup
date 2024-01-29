@@ -152,20 +152,32 @@ const getReachAgePerHours = async (req, res) => {
 const createRandomReach = async(req, res) => {
   try {
     const num = req.body.reachNumber
-    for (let i = 0; i < num; i++) {
-      const body = {
-        _shopId: req.body._shopId,
-        _customerId: Math.floor(Math.random() * 100) + 1
-      }
-      const highestReachId = await Reach.findOne({}).sort({_id: -1}).exec();
-      let reachInputs = {
-        _id: highestReachId ? highestReachId._id + 1 : 1,
-        ...body,
-        timestamp: genDate(new Date(2020, 1, 1), new Date())
-      }
+    // for (let i = 0; i < num; i++) {
+    //   const body = {
+    //     _shopId: req.body._shopId,
+    //     _customerId: Math.floor(Math.random() * 100) + 1
+    //   }
+    //   const highestReachId = await Reach.findOne({}).sort({_id: -1}).exec();
+    //   const _id = highestReachId ? highestReachId._id + 1 : 1
+    //   const users = await axios.get(`http://auth-node:3002/customer/get`, {
+    //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    // })
+    //   let reachInputs = {
+    //     _id,
+    //     ...body,
+    //     timestamp: genDate(new Date(2020, 1, 1), new Date())
+    //   }
 
-      await Reach.create(reachInputs)
-    }
+    //   await Reach.create(reachInputs)
+    // }
+    const users = await axios.get(`http://auth-node:3002/customer/get`,
+    {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      params: {
+        _id: 2,
+      }
+    })
+    console.log(users.data[0])
     res.status(200).json({status: 'ok'})
   } catch (error) {
     res.status(400).json(error)
