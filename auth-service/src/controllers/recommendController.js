@@ -1,6 +1,5 @@
 const Shop = require('../models/shop')
 const Customer = require('../models/customer')
-const shop = require('../models/shop')
 
 const calculateShop = async (req, res) => {
 
