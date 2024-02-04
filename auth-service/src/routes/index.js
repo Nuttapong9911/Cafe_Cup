@@ -16,7 +16,7 @@ router.put('/shop/update', shopController.update)
 router.delete('/shop/delete', shopController.deleteByID)
 
 router.post('/customer/register', customerController.register)
-// [ ] route: /customer/login
+router.post('/customer/login', customerController.login)
 router.get('/customer/getById', customerController.getById)
 router.get('/customer/get', customerController.get)
 router.put('/customer/update', customerController.update)

@@ -1,9 +1,16 @@
-const Customer = require('../models/customer')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
+const Customer = require('../models/customer')
 const getRandomInt = require('../libs/randomInt')
+const { JWT_LOGIN_KEY } = require('../constants/customer')
 
 const getById = async (req, res) => {
   try {
+    if (!(req.query._id)) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
+
     res.status(200).json(await Customer.findOne(req.query))
   } catch (error) {
     res.status(400).json(error)
@@ -27,21 +34,54 @@ const register = async (req, res) => {
   }
 }
 
+const login = async (req, res) => {
+  try {
+    const { username, password } = req.body
+
+    if (!(username && password)) 
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+
+    let currentUser = await Customer.findOne({username})
+    if (currentUser && await bcrypt.compare(password, currentUser.password)){
+      const token = jwt.sign(
+        { username, role: 'customer' },
+        JWT_LOGIN_KEY,
+        {
+          expiresIn: '4h',
+        }
+      )
+
+      currentUser.password = undefined
+
+      res.status(200).json({ currentUser, token })
+    }else {
+      throw ({name: 'LoginError', message: 'Invalid Credentials'}) 
+    }
+
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
 const update = async (req, res) => {
   try {
     if (!(req.query._id)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
-    if (!(await Customer.findOne(req.query))) {
-      throw ({name: 'ParameterError', message: 'User not found.'}) 
-    }
-    // RECHECK เคสนี้จะพังถ้า user update username เดิม
-    if (req.body.username && await Customer.findOne({username: req.body.username})) {
-      throw ({name: 'ParameterError', message: 'This username is already used.'}) 
-    }
-    // [ ] needs authen befor do this 
 
-    let userInputs = req.body
+    const currentUser = await Customer.findOne(req.query)
+    const userInputs = req.body
+
+    if (!currentUser) {
+      throw ({name: 'ParameterError', message: 'User not found.'}) 
+    } 
+    if (req.body.username) {
+      const otherUser = await Customer.findOne({username: req.body.username})
+      if (otherUser && currentUser._id !== otherUser._id)
+        throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+    }
+
+    // [ ] needs authen before do this 
     if (userInputs.password) userInputs.password = await bcrypt.hash(req.body.password, 10)
 
     let result = await Customer.findOneAndUpdate(req.query, userInputs, {new: true})
@@ -68,6 +108,8 @@ const deleteByID = async (req, res) => {
   }
 }
 
+
+// for test
 const randCreateCustomer = async (req, res) => {
   try {
     for (let i = 1; i <= 20; i++) {
@@ -180,6 +222,7 @@ module.exports = {
   getById,
   get,
   register,
+  login,
   update,
   deleteByID,
   randCreateCustomer
