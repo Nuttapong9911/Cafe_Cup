@@ -1,7 +1,9 @@
 const express = require('express')
+
 const shopController = require('../controllers/shopController')
 const customerController = require('../controllers/customerController')
 const recommendController = require('../controllers/recommendController')
+const middlewareAuth = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -391,6 +393,7 @@ router.put('/customer/update', customerController.update)
 router.delete('/customer/delete', customerController.deleteByID)
 
 // [ ] route: /logout
+router.get('/customer/recommend', middlewareAuth, recommendController.calculateShop)
 
 /**
  * @swagger
