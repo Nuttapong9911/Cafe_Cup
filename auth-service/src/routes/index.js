@@ -5,41 +5,8 @@ const recommendController = require('../controllers/recommendController')
 
 const router = express.Router()
 
-// [ ] task: healthcheck
-
 /**
  * @swagger
- * paths:
- *   /livez:
- *     get:
- *       summary: server healthcheck
- *       responses:
- *         200:
- *           description: sever is running.
- *         400:
- *           description: server error.
- *      
- */
-router.get('/livez', async(req, res) => res.status(200).json({ status: 'ok' }))
-
-/**
- * @swagger
- * paths:
- *  /shop/register:
- *    post:
- *      summary: create new shop
- *      consume:
- *        - application/json
- *      requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/definitions/Shop'
- *      responses:
- *        200:
- *          description: return new registered shop
- *        400:
- *          description: error occurs.
  * definitions:
  *   Shop:
  *     type: object
@@ -143,6 +110,91 @@ router.get('/livez', async(req, res) => res.status(200).json({ status: 'ok' }))
  *       customerGroup:
  *         type: string
  *         enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
+ * 
+ *   CustomerLogin:
+ *     type: object
+ *     required:
+ *       - username
+ *       - password
+ *     properties:
+ *       username:
+ *         type: string
+ *       password:
+ *         type: string
+ * 
+ *   Customer:
+ *     type: object
+ *     required:
+ *       - username
+ *       - password
+ *       - name
+ *     properties:
+ *       username:
+ *         type: string
+ *       password:
+ *         type: string
+ *       name:
+ *         type: string
+ *       gender:
+ *         type: string
+ *         enum: [ 'MALE', 'FEMALE' ]
+ *       age:
+ *         type: string
+ *         enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ]
+ *       occupation:
+ *         type: string
+ *       favourites:
+ *         type: array
+ *         items:
+ *           properties:
+ *             _shopID: 
+ *               type: number
+ *       tags:
+ *         type: array
+ *         items:
+ *            properties:
+ *              key:
+ *                type: number
+ *              value:
+ *                type: string
+ */
+
+
+// [ ] task: healthcheck
+
+/**
+ * @swagger
+ * paths:
+ *   /livez:
+ *     get:
+ *       summary: server healthcheck
+ *       responses:
+ *         200:
+ *           description: sever is running.
+ *         400:
+ *           description: server error.
+ *      
+ */
+router.get('/livez', async(req, res) => res.status(200).json({ status: 'ok' }))
+
+/**
+ * @swagger
+ * paths:
+ *  /shop/register:
+ *    post:
+ *      summary: create new shop
+ *      consume:
+ *        - application/json
+ *      requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/definitions/Shop'
+ *      responses:
+ *        200:
+ *          description: return new registered shop
+ *        400:
+ *          description: error occurs.
  */
 router.post('/shop/register', shopController.register)
 // [ ] route: /shop/login
@@ -239,43 +291,7 @@ router.delete('/shop/delete', shopController.deleteByID)
  *          description: return new registered customer
  *        400:
  *          description: error occurs.
- * definitions:
- *   Customer:
- *     type: object
- *     required:
- *       - username
- *       - password
- *       - name
- *     properties:
- *       username:
- *         type: string
- *       password:
- *         type: string
- *       name:
- *         type: string
- *       gender:
- *         type: string
- *         enum: [ 'MALE', 'FEMALE' ]
- *       age:
- *         type: string
- *         enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ]
- *       occupation:
- *         type: string
- *       favourites:
- *         type: array
- *         items:
- *           properties:
- *             _shopID: 
- *               type: number
- *       tags:
- *         type: array
- *         items:
- *            properties:
- *              key:
- *                type: number
- *              value:
- *                type: string
- *              
+ *            
  */
 router.post('/customer/register', customerController.register)
 
@@ -295,17 +311,6 @@ router.post('/customer/register', customerController.register)
  *           description: return a user with token
  *         400:
  *           description: login failed
- * definitions:
- *    CustomerLogin:
- *      type: object
- *      required:
- *        - username
- *        - password
- *      properties:
- *        username:
- *          type: string
- *        password:
- *          type: string
  */
 router.post('/customer/login', customerController.login)
 
