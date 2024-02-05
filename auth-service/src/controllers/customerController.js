@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const Customer = require('../models/customer')
 const getRandomInt = require('../libs/randomInt')
-const { JWT_LOGIN_KEY } = require('../constants/customer')
+const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req, res) => {
   try {
@@ -44,7 +44,7 @@ const login = async (req, res) => {
     let currentUser = await Customer.findOne({username})
     if (currentUser && await bcrypt.compare(password, currentUser.password)){
       const token = jwt.sign(
-        { username, role: 'customer' },
+        { _id: currentUser._id, role: 'customer' },
         JWT_LOGIN_KEY,
         {
           expiresIn: '4h',
@@ -52,8 +52,6 @@ const login = async (req, res) => {
       )
 
       currentUser.password = undefined
-      console.log('test')
-      console.log('test')
       
       res.status(200).json({ currentUser, token })
     }else {
@@ -77,8 +75,8 @@ const update = async (req, res) => {
     if (!currentUser) {
       throw ({name: 'ParameterError', message: 'User not found.'}) 
     } 
-    if (req.body.username) {
-      const otherUser = await Customer.findOne({username: req.body.username})
+    if (userInputs.username) {
+      const otherUser = await Customer.findOne({username: userInputs.username})
       if (otherUser && currentUser._id !== otherUser._id)
         throw ({name: 'ParameterError', message: 'This username is already used.'}) 
     }

@@ -1,23 +1,10 @@
-const Shop = require('../models/shop')
 const bcrypt = require('bcryptjs')
-const subDistrictList = [
-  'ศรีภูมิ',
-  'พระสิงห์',
-  'หายยา',
-  'ช้างม่อย',
-  'ช้างคลาน',
-  'วัดเกต',
-  'ช้างเผือก',
-  'สุเทพ',
-  'แม่เหียะ',
-  'ป่าแดด',
-  'หนองหอย',
-  'ท่าศาลา',
-  'หนองป่าครั่ง',
-  'ฟ้าฮ่าม',
-  'ป่าตัน',
-  'สันผีเสื้อ',
-]
+const jwt = require('jsonwebtoken')
+
+const { subDistrictList } = require('../constants/shop')
+const Shop = require('../models/shop')
+const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
+
 
 // const getRandomInt = (max) => Math.floor(Math.random() * max) 
 const getById = async (req,res) => {
@@ -44,22 +31,55 @@ const register = async (req, res) => {
   }
 }
 
+const login = async (req, res) => {
+  try {
+    const { username, password } = req.body
+
+    if (!(username && password)) 
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+
+    let currentShop = await Shop.findOne({username})
+    if (currentShop && await bcrypt.compare(password, currentShop.password)){
+      const token = jwt.sign(
+        { _id: currentShop._id, role: 'shop' },
+        JWT_LOGIN_KEY,
+        {
+          expiresIn: '4h',
+        }
+      )
+
+      currentShop.password = undefined
+      
+      res.status(200).json({ currentShop, token })
+    }else {
+      throw ({name: 'LoginError', message: 'Invalid Credentials'}) 
+    }
+
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
 const update = async (req, res) => {
   try {
     if (!(req.query._id)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
-    if (!(await Shop.findOne(req.query))) {
+
+    const currentShop = await Shop.findOne(req.query)
+    const userInputs = req.body
+
+    if (!currentShop) {
       throw ({name: 'ParameterError', message: 'User not found.'}) 
     }
-    // RECHECK เคสนี้จะพังถ้า user update username เดิม
-    if (req.body.username && await Shop.findOne({username: req.body.username})) {
-      throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+    if(userInputs.username) {
+      const otherUser = await Shop.findOne({username: userInputs.username})
+      if (otherUser && currentShop._id !== otherUser._id) {
+        throw ({name: 'ParameterError', message: 'This username is already used.'}) 
+      }
     }
+
     // [ ] needs authen befor do this 
-
-    let userInputs = req.body
-
     if (userInputs.password) userInputs.password = await bcrypt.hash(req.body.password, 10)
 
     let result = await Shop.findOneAndUpdate(req.query, userInputs, {new: true})
@@ -175,6 +195,7 @@ module.exports = {
   getById,
   get,
   register,
+  login,
   update,
   deleteByID,
 
