@@ -52,7 +52,8 @@ const login = async (req, res) => {
       )
 
       currentUser.password = undefined
-
+      console.log('test')
+      
       res.status(200).json({ currentUser, token })
     }else {
       throw ({name: 'LoginError', message: 'Invalid Credentials'}) 
