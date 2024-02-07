@@ -113,7 +113,7 @@ const router = express.Router()
  *         type: string
  *         enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
  * 
- *   ShopInput:
+ *   ShopWithToken:
  *     type: object
  *     required:
  *       - username
@@ -219,7 +219,7 @@ const router = express.Router()
  *       token:
  *         type: string 
  * 
- *   CustomerLogin:
+ *   LoginInput:
  *     type: object
  *     required:
  *       - username
@@ -266,7 +266,7 @@ const router = express.Router()
  *              value:
  *                type: string
  * 
- *   CustomerInput:
+ *   CustomerWithToken:
  *     type: object
  *     required:
  *       - username
@@ -341,22 +341,42 @@ router.get('/livez', async(req, res) => res.status(200).json({ status: 'ok' }))
  *         - application/json
  *       requestBody:
  *         content:
- *         application/json:
- *           schema:
- *             $ref: '#/definitions/Shop'
- *      responses:
- *        200:
- *          description: return new registered shop
- *          content:
- *          application/json:
- *            schema:
- *              $ref: '#/definitions/Shop'
- *        400:
- *          description: error occurs.
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/Shop'
+ *       responses:
+ *         200:
+ *           description: return new registered shop
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/Shop'
+ *         400:
+ *           description: error occurs.
  */
 router.post('/shop/register', shopController.register)
 
-
+/**
+ * @swagger
+ * paths:
+ *   /shop/login:
+ *     post:
+ *       summary: shop login
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/LoginInput' 
+ *       responses:
+ *         200:
+ *           description: return a shop with token
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ShopWithToken' 
+ *         400:
+ *           description: login failed
+ */
 router.post('/shop/login', shopController.register)
 
 /**
@@ -385,7 +405,7 @@ router.post('/shop/login', shopController.register)
  *         400:
  *           description: fetched failed
  */
-router.get('/shop/getById', shopController.getById)
+router.get('/shop/getById', middlewareAuth, shopController.getById)
 
 /**
  * @swagger
@@ -416,7 +436,7 @@ router.get('/shop/get', shopController.get)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/ShopInput'
+ *               $ref: '#/definitions/ShopWithToken'
  *       responses:
  *         200:
  *           description: return an edited shop
@@ -427,7 +447,7 @@ router.get('/shop/get', shopController.get)
  *         400:
  *           description: error occurs.
  */
-router.put('/shop/update', shopController.update)
+router.put('/shop/update', middlewareAuth, shopController.update)
 
 /**
  * @swagger
@@ -485,10 +505,14 @@ router.post('/customer/register', customerController.register)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/CustomerLogin' 
+ *               $ref: '#/definitions/LoginInput' 
  *       responses:
  *         200:
  *           description: return a user with token
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/CustomerWithToken' 
  *         400:
  *           description: login failed
  */
@@ -520,7 +544,7 @@ router.post('/customer/login', customerController.login)
  *         400:
  *           description: fetched failed
  */
-router.get('/customer/getById', customerController.getById)
+router.get('/customer/getById', middlewareAuth, customerController.getById)
 
 /**
  * @swagger
@@ -551,14 +575,18 @@ router.get('/customer/get', customerController.get)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/CustomerInput'
+ *               $ref: '#/definitions/CustomerWithToken'
  *       responses:
  *         200:
  *           description: return edited customer
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/Customer'
  *         400:
  *           description: edit failed
  */
-router.put('/customer/update', customerController.update)
+router.put('/customer/update', middlewareAuth, customerController.update)
 
 /**
  * @swagger
@@ -574,6 +602,10 @@ router.put('/customer/update', customerController.update)
  *       responses:
  *         200:
  *           description: return a deleted customer
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/Customer'
  *         400:
  *           description: fetched failed
  */
@@ -599,7 +631,7 @@ router.delete('/customer/delete', customerController.deleteByID)
  *               $ref: '#/definitions/Token'
  *       responses:
  *         200:
- *           description: return list of recommended shops
+ *           description: return array of recommended shops sort by order
  *         400:
  *           description: error occurs
  */
