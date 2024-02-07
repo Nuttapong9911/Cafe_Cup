@@ -168,11 +168,10 @@ const getReviewScore = async (req, res) => {
           totalWorthiness: { $avg: '$worthiness' },
           count: { $sum: 1 }
         }
-      },
-      { $sort: { _id: 1 } }
+      }
     ])
 
-    res.status(200).json(result)
+    res.status(200).json(result[0])
   } catch (error) {
     res.status(400).json(error)
   }
@@ -260,40 +259,80 @@ const getRevieweRank = async (req, res) => {
               $group:
               {
                 _id: null,
-                overallAvgFlavour: { $avg: '$avgFlavour' },
-                minAvgFlavour: { $min: '$avgFlavour' },
-                maxAvgFlavour: { $max: '$avgFlavour' },
+                flavourAvg: { $avg: '$avgFlavour' },
+                flavourMin: { $min: '$avgFlavour' },
+                flavourMax: { $max: '$avgFlavour' },
                 
-                overallAvgPlace: { $avg: '$avgPlace' },
-                minAvgPlace: { $min: '$avgPlace' },
-                maxAvgPlace: { $max: '$avgPlace' },
+                placeAvg: { $avg: '$avgPlace' },
+                placeMin: { $min: '$avgPlace' },
+                placeMax: { $max: '$avgPlace' },
 
-                overallAvgService: { $avg: '$avgService' },
-                minAvgService: { $min: '$avgService' },
-                maxAvgService: { $max: '$avgService' },
+                serviceAvg: { $avg: '$avgService' },
+                serviceMin: { $min: '$avgService' },
+                serviceMax: { $max: '$avgService' },
 
-                overallAvgParking: { $avg: '$avgParking' },
-                minAvgParking: { $min: '$avgParking' },
-                maxAvgParking: { $max: '$avgParking' },
+                parkingAvg: { $avg: '$avgParking' },
+                parkingMin: { $min: '$avgParking' },
+                parkingMax: { $max: '$avgParking' },
 
-                overallAvgWorthiness: { $avg: '$avgWorthiness' },
-                minAvgWorthiness: { $min: '$avgWorthiness' },
-                maxAvgWorthiness: { $max: '$avgWorthiness' },
+                worthinessAvg: { $avg: '$avgWorthiness' },
+                worthinessMin: { $min: '$avgWorthiness' },
+                worthinessMax: { $max: '$avgWorthiness' },
 
-                overallAvgTotalScore: { $avg: '$avgTotalScore' },
-                minAvgTotalScore: { $min: '$avgTotalScore' },
-                maxAvgTotalScore: { $max: '$avgTotalScore' },
+                totalScoreAvg: { $avg: '$avgTotalScore' },
+                totalScoreMin: { $min: '$avgTotalScore' },
+                totalScoreMax: { $max: '$avgTotalScore' },
 
                 overallTotalReviews: { $sum: '$totalReview' }
-   
               }
             }
           ]
         }
       },
-    ])   
+    ])
 
-    res.status(200).json(result)
+    const formatResult = {
+      flavour: {
+        avg: result[0].allShop[0].flavourAvg,
+        min: result[0].allShop[0].flavourMin,
+        max: result[0].allShop[0].flavourMax,
+        shopAvg: result[0].thisShop[0].avgFlavour
+      },
+      place: {
+        avg: result[0].allShop[0].placeAvg,
+        min: result[0].allShop[0].placeMin,
+        max: result[0].allShop[0].placeMax,
+        shopAvg: result[0].thisShop[0].avgPlace
+      },
+      service: {
+        avg: result[0].allShop[0].serviceAvg,
+        min: result[0].allShop[0].serviceMin,
+        max: result[0].allShop[0].serviceMax,
+        shopAvg: result[0].thisShop[0].avgService
+      },
+      parking: {
+        avg: result[0].allShop[0].parkingAvg,
+        min: result[0].allShop[0].parkingMin,
+        max: result[0].allShop[0].parkingMax,
+        shopAvg: result[0].thisShop[0].avgParking
+      },
+      worthiness: {
+        avg: result[0].allShop[0].worthinessAvg,
+        min: result[0].allShop[0].worthinessMin,
+        max: result[0].allShop[0].worthinessMax,
+        shopAvg: result[0].thisShop[0].avgWorthiness
+      },
+      totalScore: {
+        avg: result[0].allShop[0].totalScoreAvg,
+        min: result[0].allShop[0].totalScoreMin,
+        max: result[0].allShop[0].totalScoreMax,
+        shopAvg: result[0].thisShop[0].avgTotalScore
+      },
+      thisShopReviewNumber: result[0].thisShop[0].totalReview,
+      allShopreviewNumber: result[0].allShop[0].overallTotalReviews
+    }
+
+    res.status(200).json(formatResult)
   } catch (error) {
     console.log(error)
     res.status(400).json(error)

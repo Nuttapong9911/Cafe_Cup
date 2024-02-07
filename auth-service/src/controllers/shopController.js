@@ -34,7 +34,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body
-
     if (!(username && password)) 
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
 

@@ -10,13 +10,114 @@ const router = express.Router()
 /**
  * @swagger
  * definitions:
- *   Shop:
+ *   ShopInput:
  *     type: object
  *     required:
  *       - username
  *       - password
  *       - name
  *     properties:
+ *       username:
+ *         type: string
+ *       password:
+ *         type: string
+ *       name:
+ *         type: string
+ *       description:
+ *         type: string
+ *       address:
+ *         type: object
+ *         properties:
+ *           country:
+ *             type: string
+ *           province:
+ *             type: string
+ *           district:
+ *             type: string
+ *           subDistrict:
+ *             type: string
+ *           road:
+ *             type: string
+ *           postelCode:
+ *             type: string
+ *           addressText:
+ *             type: string
+ *       menus:
+ *         type: array
+ *         items:
+ *           properties:
+ *             name:
+ *               type: string
+ *             category:
+ *               type: string
+ *             price:
+ *               type: number
+ *             description:
+ *               type: string
+ *             image:
+ *               type: string
+ *       coverImage:
+ *         type: string
+ *       shopImage:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: string
+ *       menuImages:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: string
+ *       foodImages:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: string
+ *       otherImages:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: string
+ *       daysOpen:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: number
+ *       timeOpen:
+ *         type: string
+ *       timeClose:
+ *         type: string
+ *       singleSeat:
+ *         type: number
+ *       doubleSeat:
+ *         type: number
+ *       largeSeat:
+ *         type: number
+ *       wifi:
+ *         type: boolean
+ *       powerPlugs:
+ *         type: boolean
+ *       conferenceRoom:
+ *         type: boolean
+ *       toilet:
+ *         type: boolean
+ *       smokingZone:
+ *         type: boolean
+ *       photoSpots:
+ *         type: string
+ *         enum: ['FEW', 'MEDIUM', 'MUCH']
+ *       noice:
+ *         type: string
+ *         enum: ['QUITE', 'NORMAL']
+ *       customerGroup:
+ *         type: string
+ *         enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
+ * 
+ *   ShopOutput:
+ *     type: object
+ *     properties:
+ *       _id:
+ *         type: string
  *       username:
  *         type: string
  *       password:
@@ -115,107 +216,112 @@ const router = express.Router()
  * 
  *   ShopWithToken:
  *     type: object
- *     required:
- *       - username
- *       - password
- *       - name
- *       - token
  *     properties:
- *       username:
- *         type: string
- *       password:
- *         type: string
- *       name:
- *         type: string
- *       description:
- *         type: string
- *       address:
+ *       shop:
  *         type: object
+ *         required:
+ *           - username
+ *           - password
+ *           - name
+ *           - token
  *         properties:
- *           country:
+ *           _id:
  *             type: string
- *           province:
+ *           username:
  *             type: string
- *           district:
+ *           password:
  *             type: string
- *           subDistrict:
+ *           name:
  *             type: string
- *           road:
+ *           description:
  *             type: string
- *           postelCode:
+ *           address:
+ *             type: object
+ *             properties:
+ *               country:
+ *                 type: string
+ *               province:
+ *                 type: string
+ *               district:
+ *                 type: string
+ *               subDistrict:
+ *                 type: string
+ *               road:
+ *                 type: string
+ *               postelCode:
+ *                 type: string
+ *               addressText:
+ *                 type: string
+ *           menus:
+ *             type: array
+ *             items:
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 category:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 description:
+ *                   type: string
+ *                 image:
+ *                   type: string
+ *           coverImage:
  *             type: string
- *           addressText:
- *             type: string
- *       menus:
- *         type: array
- *         items:
- *           properties:
- *             name:
+ *           shopImage:
+ *             type: array
+ *             collectionFormat: csv
+ *             items:
  *               type: string
- *             category:
+ *           menuImages:
+ *             type: array
+ *             collectionFormat: csv
+ *             items:
  *               type: string
- *             price:
+ *           foodImages:
+ *             type: array
+ *             collectionFormat: csv
+ *             items:
+ *               type: string
+ *           otherImages:
+ *             type: array
+ *             collectionFormat: csv
+ *             items:
+ *               type: string
+ *           daysOpen:
+ *             type: array
+ *             collectionFormat: csv
+ *             items:
  *               type: number
- *             description:
- *               type: string
- *             image:
- *               type: string
- *       coverImage:
- *         type: string
- *       shopImage:
- *         type: array
- *         collectionFormat: csv
- *         items:
- *           type: string
- *       menuImages:
- *         type: array
- *         collectionFormat: csv
- *         items:
- *           type: string
- *       foodImages:
- *         type: array
- *         collectionFormat: csv
- *         items:
- *           type: string
- *       otherImages:
- *         type: array
- *         collectionFormat: csv
- *         items:
- *           type: string
- *       daysOpen:
- *         type: array
- *         collectionFormat: csv
- *         items:
- *           type: number
- *       timeOpen:
- *         type: string
- *       timeClose:
- *         type: string
- *       singleSeat:
- *         type: number
- *       doubleSeat:
- *         type: number
- *       largeSeat:
- *         type: number
- *       wifi:
- *         type: boolean
- *       powerPlugs:
- *         type: boolean
- *       conferenceRoom:
- *         type: boolean
- *       toilet:
- *         type: boolean
- *       smokingZone:
- *         type: boolean
- *       photoSpots:
- *         type: string
- *         enum: ['FEW', 'MEDIUM', 'MUCH']
- *       noice:
- *         type: string
- *         enum: ['QUITE', 'NORMAL']
- *       customerGroup:
- *         type: string
- *         enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
+ *           timeOpen:
+ *             type: string
+ *           timeClose:
+ *             type: string
+ *           singleSeat:
+ *             type: number
+ *           doubleSeat:
+ *             type: number
+ *           largeSeat:
+ *             type: number
+ *           wifi:
+ *             type: boolean
+ *           powerPlugs:
+ *             type: boolean
+ *           conferenceRoom:
+ *             type: boolean
+ *           toilet:
+ *             type: boolean
+ *           smokingZone:
+ *             type: boolean
+ *           photoSpots:
+ *             type: string
+ *             enum: ['FEW', 'MEDIUM', 'MUCH']
+ *           noice:
+ *             type: string
+ *             enum: ['QUITE', 'NORMAL']
+ *           customerGroup:
+ *             type: string
+ *             enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
  *       token:
  *         type: string 
  * 
@@ -230,13 +336,47 @@ const router = express.Router()
  *       password:
  *         type: string
  * 
- *   Customer:
+ *   CustomerInput:
  *     type: object
  *     required:
  *       - username
  *       - password
  *       - name
  *     properties:
+ *       username:
+ *         type: string
+ *       password:
+ *         type: string
+ *       name:
+ *         type: string
+ *       gender:
+ *         type: string
+ *         enum: [ 'MALE', 'FEMALE' ]
+ *       age:
+ *         type: string
+ *         enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ]
+ *       occupation:
+ *         type: string
+ *       favourites:
+ *         type: array
+ *         items:
+ *           properties:
+ *             _shopID: 
+ *               type: number
+ *       tags:
+ *         type: array
+ *         items:
+ *            properties:
+ *              key:
+ *                type: number
+ *              value:
+ *                type: string
+ * 
+ *   CustomerOutput:
+ *     type: object
+ *     properties:
+ *       _id:
+ *         type: number
  *       username:
  *         type: string
  *       password:
@@ -268,40 +408,40 @@ const router = express.Router()
  * 
  *   CustomerWithToken:
  *     type: object
- *     required:
- *       - username
- *       - password
- *       - name
- *       - token
  *     properties:
- *       username:
- *         type: string
- *       password:
- *         type: string
- *       name:
- *         type: string
- *       gender:
- *         type: string
- *         enum: [ 'MALE', 'FEMALE' ]
- *       age:
- *         type: string
- *         enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ]
- *       occupation:
- *         type: string
- *       favourites:
- *         type: array
- *         items:
- *           properties:
- *             _shopID: 
- *               type: number
- *       tags:
- *         type: array
- *         items:
- *            properties:
- *              key:
- *                type: number
- *              value:
- *                type: string
+ *       customer:
+ *         type: object
+ *         properties:
+ *           _id:
+ *             type: number
+ *           username:
+ *             type: string
+ *           password:
+ *             type: string
+ *           name:
+ *             type: string
+ *           gender:
+ *             type: string
+ *             enum: [ 'MALE', 'FEMALE' ]
+ *           age:
+ *             type: string
+ *             enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ]
+ *           occupation:
+ *             type: string
+ *           favourites:
+ *             type: array
+ *             items:
+ *               properties:
+ *                 _shopID: 
+ *                   type: number
+ *           tags:
+ *             type: array
+ *             items:
+ *                properties:
+ *                  key:
+ *                    type: number
+ *                  value:
+ *                    type: string
  *       token:
  *         type: string 
  * 
@@ -343,14 +483,14 @@ router.get('/livez', async(req, res) => res.status(200).json({ status: 'ok' }))
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/Shop'
+ *               $ref: '#/definitions/ShopInput'
  *       responses:
  *         200:
  *           description: return new registered shop
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Shop'
+ *                 $ref: '#/definitions/ShopOutput'
  *         400:
  *           description: error occurs.
  */
@@ -377,7 +517,7 @@ router.post('/shop/register', shopController.register)
  *         400:
  *           description: login failed
  */
-router.post('/shop/login', shopController.register)
+router.post('/shop/login', shopController.login)
 
 /**
  * @swagger
@@ -390,18 +530,17 @@ router.post('/shop/login', shopController.register)
  *           name: _id
  *           type: number
  *           required: true
- *       requestBody:
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/definitions/Token'
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
  *       responses:
  *         200:
  *           description: return a shop
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Shop'
+ *                 $ref: '#/definitions/ShopOutput'
  *         400:
  *           description: fetched failed
  */
@@ -432,18 +571,22 @@ router.get('/shop/get', shopController.get)
  *           name: _id
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
  *       requestBody:
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/ShopWithToken'
+ *               $ref: '#/definitions/ShopInput'
  *       responses:
  *         200:
  *           description: return an edited shop
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Shop'
+ *                 $ref: '#/definitions/ShopOutput'
  *         400:
  *           description: error occurs.
  */
@@ -466,7 +609,7 @@ router.put('/shop/update', middlewareAuth, shopController.update)
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Shop'
+ *                 $ref: '#/definitions/ShopOutput'
  *         400:
  *           description: fetched failed
  */
@@ -482,14 +625,14 @@ router.delete('/shop/delete', shopController.deleteByID)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/Customer'
+ *               $ref: '#/definitions/CustomerInput'
  *       responses:
  *         200:
  *           description: return new registered customer
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Customer'
+ *                 $ref: '#/definitions/CustomerOutput'
  *         400:
  *           description: error occurs.
  */
@@ -529,18 +672,17 @@ router.post('/customer/login', customerController.login)
  *           name: _id
  *           type: number
  *           required: true
- *       requestBody:
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/definitions/Token'
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
  *       responses:
  *         200:
  *           description: return a customer
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Customer'
+ *                 $ref: '#/definitions/CustomerOutput'
  *         400:
  *           description: fetched failed
  */
@@ -571,18 +713,22 @@ router.get('/customer/get', customerController.get)
  *           name: _id
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
  *       requestBody:
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/definitions/CustomerWithToken'
+ *               $ref: '#/definitions/CustomerInput' 
  *       responses:
  *         200:
  *           description: return edited customer
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Customer'
+ *                 $ref: '#/definitions/CustomerOutput'
  *         400:
  *           description: edit failed
  */
@@ -593,7 +739,7 @@ router.put('/customer/update', middlewareAuth, customerController.update)
  * paths:
  *   /customer/delete:
  *     delete:
- *       summary: delete customer by _shopId
+ *       summary: delete customer by _id
  *       parameters:
  *         - in: query
  *           name: _id
@@ -605,7 +751,7 @@ router.put('/customer/update', middlewareAuth, customerController.update)
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/definitions/Customer'
+ *                 $ref: '#/definitions/CustomerOutput'
  *         400:
  *           description: fetched failed
  */
@@ -624,11 +770,10 @@ router.delete('/customer/delete', customerController.deleteByID)
  *           name: _id
  *           type: number
  *           required: true
- *       requestBody:
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/definitions/Token'
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
  *       responses:
  *         200:
  *           description: return array of recommended shops sort by order

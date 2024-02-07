@@ -21,6 +21,8 @@ const calculateShop = async (req, res) => {
     // find all tags and values in the group
     let tagCounts = []
     let tagsArr = []
+
+    // RECHECK for empty tags
     userGroups.forEach(user => {
       const tagString1 = `${user.tags[0].key}-${user.tags[0].value}`
       if (tagsArr.indexOf(tagString1) >= 0) {

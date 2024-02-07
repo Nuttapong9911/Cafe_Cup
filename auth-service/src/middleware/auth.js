@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
     // e.g., customer _id 101 นำ token ตัวเอง ไปยิงใส่ route ของ shop ด้วย _id 101 
     // action ของ route นัั้นจะสำเร็จ (ถ้า data ถูกต้อง)
 
-    const { token } = req.body
+    const { token } = req.headers
     const { _id } = req.query
     if (!token) throw({name: 'userValidateError', message: 'token not found'})
 
@@ -39,7 +39,7 @@ module.exports = async (req, res, next) => {
       return next()
     }
     else
-      throw({name: 'userValidateError', message: 'invalid role'})
+      throw({name: 'userValidateError', message: 'invalid token'})
   } catch (error) {
     console.log(error)
     res.status(400).json(error)

@@ -33,6 +33,33 @@ const router = express.Router()
  *       comment:
  *         type: string
  * 
+ *   ReviewOutput:
+ *     type: object
+ *     properties:
+ *       _id:
+ *         type: number
+ *       _customerId:
+ *         type: number
+ *       _shopId:
+ *         type: number
+ *       _menuId:
+ *         type: number
+ *       flavour:
+ *         type: number
+ *       place:
+ *         type: number
+ *       service:
+ *         type: number
+ *       parking:
+ *         type: number
+ *       worthiness:
+ *         type: number
+ *       comment:
+ *         type: string
+ *       timestamp:
+ *         type: string
+ *         format: date-time
+ * 
  *   Reach:
  *     type: object
  *     required:
@@ -43,8 +70,111 @@ const router = express.Router()
  *         type: number
  *       _shopId:
  *         type: number
+ * 
+ *   ReachOutput:
+ *     type: object
+ *     properties:
+ *       _id:
+ *         type: number
+ *       _customerId:
+ *         type: number
+ *       _shopId:
+ *         type: number
+ *       timestamp:
+ *         type: string
+ *         format: date-time
+ *
+ *   ReachCountOutput:
+ *     type: object
+ *     properties:
+ *       result:
+ *         type: array
+ *         items:
+ *           properties:
+ *             _id:
+ *               type: number
+ *             count:
+ *               type: number
+ *       total:
+ *         type: number
+ * 
+ *   ReviewScoreOutput:
+ *     type: object
+ *     properties:
+ *       totalFlavour:
+ *         type: number
+ *       totalPlace:
+ *         type: number
+ *       totalService:
+ *         type: number
+ *       totalParking:
+ *         type: number
+ *       totalWorthiness:
+ *         type: number
+ * 
+ *   ReviewRankOutput:
+ *     type: object
+ *     properties:
+ *       flavour:
+ *         type: object
+ *         properties:
+ *           avg:
+ *             type: number
+ *           min:
+ *             type: number
+ *           max:
+ *             type: number
+ *           shopAvg:
+ *             type: number
+ *       place:
+ *         type: object
+ *         properties:
+ *           avg:
+ *             type: number
+ *           min:
+ *             type: number
+ *           max:
+ *             type: number
+ *           shopAvg:
+ *             type: number
+ *       service:
+ *         type: object
+ *         properties:
+ *           avg:
+ *             type: number
+ *           min:
+ *             type: number
+ *           max:
+ *             type: number
+ *           shopAvg:
+ *             type: number
+ *       parking:
+ *         type: object
+ *         properties:
+ *           avg:
+ *             type: number
+ *           min:
+ *             type: number
+ *           max:
+ *             type: number
+ *           shopAvg:
+ *             type: number
+ *       worthiness:
+ *         type: object
+ *         properties:
+ *           avg:
+ *             type: number
+ *           min:
+ *             type: number
+ *           max:
+ *             type: number
+ *           shopAvg:
+ *             type: number
+ *       thisShopReviewNumber:
+ *         type: number
+ *       allShopreviewNumber:
+ *         type: number
  */
-
 
 /**
  * @swagger
@@ -74,11 +204,15 @@ router.get('/livez', async (req, res) => res.status(200).json({ status: "ok" }))
  *           application/json:
  *             schema:
  *               $ref: '#/definitions/Review'
- *         responses:
- *           200:
- *             description: create new review
- *           400:
- *             description: error
+ *       responses:
+ *         200:
+ *           description: return created review
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewOutput'
+ *         400:
+ *           description: error
  */
 router.post('/review/create', reviewController.create)
 
@@ -95,7 +229,11 @@ router.post('/review/create', reviewController.create)
  *           required: true
  *       responses:
  *         200:
- *           description: return a review
+ *           description: return a review, null if not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewOutput'
  *         400:
  *           description: error
  */
@@ -109,7 +247,7 @@ router.get('/review/getById', reviewController.getById)
  *       summary: get all reviews
  *       responses:
  *         200:
- *           description: return all reviews
+ *           description: return array of reviews
  *         400:
  *           description: error
  */
@@ -136,6 +274,10 @@ router.get('/review/get', reviewController.get)
  *       responses:
  *         200:
  *           description: return an edited review
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewOutput'
  *         400:
  *           description: error
  *     
@@ -156,6 +298,10 @@ router.put('/review/update', reviewController.update)
  *       responses:
  *         200:
  *           description: return a deleted review
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewOutput'
  *         400:
  *           description: error
  */
@@ -177,6 +323,10 @@ router.delete('/review/delete', reviewController.deleteById)
  *       responses:
  *         200:
  *           description: create new reach
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReachOutput'
  *         400:
  *           description: error
  */
@@ -196,6 +346,10 @@ router.post('/reach/create', reachController.create)
  *       responses:
  *         200:
  *           description: return a reach
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReachOutput'
  *         400:
  *           description: error 
  */
@@ -209,7 +363,7 @@ router.get('/reach/getById', reachController.getById)
  *       summary: get all reach
  *       responses:
  *         200:
- *           description: return all reachs
+ *           description: return array of reachs
  *         400:
  *           description: error 
  */
@@ -221,7 +375,7 @@ router.get('/reach/get', reachController.get)
  *   /analytic/reachCount:
  *     get:
  *       summary: create analytic graph 1
- *       description: return a data shown reach count for each hour in the given time
+ *       description: data for generating reach count per hour analytic graph
  *       parameters:
  *         - in: query
  *           name: _shopId
@@ -229,7 +383,11 @@ router.get('/reach/get', reachController.get)
  *           required: true
  *       responses:
  *         200:
- *           description: return a data for visualize graph
+ *           description: return result._id as hour in a day, result.count as number of reach in that hour
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReachCountOutput'
  *         400:
  *           description: error 
  *     
@@ -242,7 +400,7 @@ router.get('/analytic/reachCount', analyticController.getReachCountPerHours)
  *   /analytic/reachAge:
  *     get:
  *       summary: create analytic graph 2
- *       description: return a data shown reach age in the given time
+ *       description: data for generating age count of reaches analytic graph
  *       parameters:
  *         - in: query
  *           name: _shopId
@@ -250,7 +408,11 @@ router.get('/analytic/reachCount', analyticController.getReachCountPerHours)
  *           required: true
  *       responses:
  *         200:
- *           description: return a data for visualize graph
+ *           description: return result._id as age_label, result.count as number of reach in that label
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReachCountOutput'
  *         400:
  *           description: error 
  *     
@@ -263,7 +425,7 @@ router.get('/analytic/reachAge', analyticController.getReachAge)
  *   /analytic/reviewShopScore:
  *     get:
  *       summary: create analytic graph 3
- *       description: return a data shown review score count for each hour in the given time
+ *       description: data for generating score for all review types analytic graph
  *       parameters:
  *         - in: query
  *           name: _shopId
@@ -271,7 +433,11 @@ router.get('/analytic/reachAge', analyticController.getReachAge)
  *           required: true
  *       responses:
  *         200:
- *           description: return a data for visualize graph
+ *           description: total mean score and count means number of calculated reviews
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewScoreOutput'
  *         400:
  *           description: error 
  *     
@@ -284,7 +450,7 @@ router.get('/analytic/reviewShopScore', analyticController.getReviewScore)
  *   /analytic/reviewRank:
  *     get:
  *       summary: create analytic graph 4
- *       description: return a data shown review score count in the given time
+ *       description: data for generating score rank for each review types analytic graph
  *       parameters:
  *         - in: query
  *           name: _shopId
@@ -292,7 +458,11 @@ router.get('/analytic/reviewShopScore', analyticController.getReviewScore)
  *           required: true
  *       responses:
  *         200:
- *           description: return a data for visualize graph
+ *           description: ask me for more info
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewRankOutput'
  *         400:
  *           description: error 
  *     
