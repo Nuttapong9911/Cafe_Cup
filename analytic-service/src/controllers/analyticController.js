@@ -23,6 +23,10 @@ const validateToken = async (token) => {
   }
 }
 
+    
+// RECHECK do we need to check if data is too few ??
+// RECHECK validate time input e.g., quarter without year
+
 const getReachCountPerHours = async (req, res) => {
   try {
     await validateToken(req.headers.token)
@@ -31,19 +35,25 @@ const getReachCountPerHours = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
 
-    const { year, month, quarter, dayOfWeek } = req.body
+    const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
     let inputMonth
     if (quarter) {
-      inputMonth = [ quarter*3 - 2, quarter*3 - 1, quarter*3 ]
+      inputMonth = [
+        (parseInt(quarter, 10))*3 - 2,
+        (parseInt(quarter, 10))*3 - 1,
+        (parseInt(quarter, 10))*3 
+      ]
     } else if (month) {
-      inputMonth = [ month ]
+      inputMonth = [ parseInt(month, 10) ]
     } else {
       inputMonth = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
     }
    
     const result = await Reach.aggregate([
-      { $project: {
+      { 
+        $project: 
+        {
           _shopId: 1,
           timestamp: 1, 
           'year': { $year: '$timestamp' },
@@ -53,18 +63,20 @@ const getReachCountPerHours = async (req, res) => {
           'hour': { $hour: '$timestamp'}
         }
       },
-      { $match: {
+      { 
+        $match: 
+        {
           _shopId: parseInt(_shopId),
-          ...(year && { year }),
-          month: {
-            $in: inputMonth
-          },
-          ...(dayOfWeek && { dayOfWeek }),
-      }},
+          ...(year && { year: parseInt(year, 10) }),
+          month: { $in: inputMonth },
+          ...(dayOfWeek && { dayOfWeek: parseInt(dayOfWeek, 10) }),
+        }
+      },
       {
-        $group: {
+        $group:
+        { 
           _id: "$hour",
-          count: { $sum: 1 }
+          count: { $sum: 1 } 
         }
       },
       { $sort: { _id: 1 } }
@@ -89,13 +101,17 @@ const getReachAge = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
 
-    const { year, month, quarter, dayOfWeek } = req.body
+    const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
     let inputMonth
     if (quarter) {
-      inputMonth = [ quarter*3 - 2, quarter*3 - 1, quarter*3 ]
+      inputMonth = [
+        (parseInt(quarter, 10))*3 - 2,
+        (parseInt(quarter, 10))*3 - 1,
+        (parseInt(quarter, 10))*3 
+      ]
     } else if (month) {
-      inputMonth = [ month ]
+      inputMonth = [ parseInt(month, 10) ]
     } else {
       inputMonth = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
     }
@@ -103,32 +119,32 @@ const getReachAge = async (req, res) => {
     const result = await Reach.aggregate([
       { 
         $project: 
-          {
-            _shopId: 1, 
-            timestamp: 1,
-            _customerId: 1, 
-            customerAge: 1,
-            'year': { $year: '$timestamp' },
-            'month' : { $month: '$timestamp' },
-            'day': { $dayOfMonth: '$timestamp'},
-            'dayOfWeek': { $dayOfWeek: '$timestamp'},
-          }
+        {
+          _shopId: 1, 
+          timestamp: 1,
+          _customerId: 1, 
+          customerAge: 1,
+          'year': { $year: '$timestamp' },
+          'month' : { $month: '$timestamp' },
+          'day': { $dayOfMonth: '$timestamp'},
+          'dayOfWeek': { $dayOfWeek: '$timestamp'},
+        }
       },
       { 
         $match: 
-          {
-            _shopId: parseInt(_shopId),
-            ...(year && { year }),
-            month: { $in: inputMonth },
-            ...(dayOfWeek && { dayOfWeek }),
-          }
+        {
+          _shopId: parseInt(_shopId),
+          ...(year && { year: parseInt(year, 10) }),
+          month: { $in: inputMonth },
+          ...(dayOfWeek && { dayOfWeek: parseInt(dayOfWeek, 10) }),
+        }
       },
       {
         $group: 
-          {
-            _id: "$customerAge",
-            count: { $sum: 1 }
-          }
+        {
+          _id: "$customerAge",
+          count: { $sum: 1 }
+        }
       },
       { $sort: { _id: 1 } }
     ])
@@ -152,19 +168,25 @@ const getReviewScore = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
     
-    const { year, month, quarter, dayOfWeek } = req.body
+    const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
     let inputMonth
     if (quarter) {
-      inputMonth = [ quarter*3 - 2, quarter*3 - 1, quarter*3 ]
+      inputMonth = [
+        (parseInt(quarter, 10))*3 - 2,
+        (parseInt(quarter, 10))*3 - 1,
+        (parseInt(quarter, 10))*3 
+      ]
     } else if (month) {
-      inputMonth = [ month ]
+      inputMonth = [ parseInt(month, 10) ]
     } else {
       inputMonth = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
     }
 
     const result = await Review.aggregate([
-      { $project: {
+      {
+        $project:
+        {
           _shopId: 1,
           timestamp: 1, 
           'year': { $year: '$timestamp' },
@@ -178,16 +200,18 @@ const getReviewScore = async (req, res) => {
           'worthiness': 1,
         }
       },
-      { $match: {
+      { 
+        $match: 
+        {
           _shopId: parseInt(_shopId),
-          ...(year && { year }),
-          month: {
-            $in: inputMonth
-          },
-          ...(dayOfWeek && { dayOfWeek }),
-      }},
+          ...(year && { year: parseInt(year, 10) }),
+          month: { $in: inputMonth },
+          ...(dayOfWeek && { dayOfWeek: parseInt(dayOfWeek, 10) }),
+        }
+      },
       {
-        $group: {
+        $group:
+        {
           _id: null,
           totalFlavour: { $avg: '$flavour' },
           totalPlace: { $avg: '$place' },
@@ -212,21 +236,25 @@ const getRevieweRank = async (req, res) => {
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
-    
-    const { year, month, quarter } = req.body
+
+    const { year, month, quarter } = req.query
     const { _shopId } = req.query
     let inputMonth
     if (quarter) {
-      inputMonth = [ quarter*3 - 2, quarter*3 - 1, quarter*3 ]
+      inputMonth = [
+        (parseInt(quarter, 10))*3 - 2,
+        (parseInt(quarter, 10))*3 - 1,
+        (parseInt(quarter, 10))*3 
+      ]
     } else if (month) {
-      inputMonth = [ month ]
+      inputMonth = [ parseInt(month, 10) ]
     } else {
       inputMonth = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
     }
 
     const result = await Review.aggregate([
       {
-        $project: 
+        $project:
         {
           _shopId: 1,
           timestamp: 1, 
@@ -243,7 +271,7 @@ const getRevieweRank = async (req, res) => {
       {
         $match: 
         {
-          ...(year && { year }),
+          ...(year && { year: parseInt(year, 10) }),
           month: { $in: inputMonth },
         }
       },
@@ -260,14 +288,15 @@ const getRevieweRank = async (req, res) => {
         },
       }, 
       {
-        $addFields: 
-        {
-          avgTotalScore:
-          {
-            $divide: 
-            [
-              {
-                $add: ['$avgFlavour', '$avgPlace', '$avgService', '$avgParking', '$avgWorthiness']  
+        $addFields:
+        { avgTotalScore: { $divide: 
+            [ { $add:
+                ['$avgFlavour',
+                '$avgPlace',
+                '$avgService',
+                '$avgParking',
+                '$avgWorthiness'
+                ]
               },
               5
             ]
@@ -275,13 +304,11 @@ const getRevieweRank = async (req, res) => {
         }
       },
       {
-        $facet: 
+        $facet:
         {
           'thisShop':
           [
-            {
-              $match: { _id: parseInt(_shopId) }
-            }
+            { $match: { _id: parseInt(_shopId) } }
           ],
           'allShop':
           [

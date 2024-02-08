@@ -27,6 +27,7 @@ const create = async (req, res) => {
     if (!(req.body._customerId && req.body._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
+    // [ ] get user to store age
 
     res.status(200).json(await createReach({...req.body, timestamp: new Date()}))
   } catch (error) {

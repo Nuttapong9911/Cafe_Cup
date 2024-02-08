@@ -174,6 +174,28 @@ const router = express.Router()
  *         type: number
  *       allShopreviewNumber:
  *         type: number
+ * 
+ *   AnalyticTimeBody:
+ *     type: object
+ *     properties:
+ *       year:
+ *         type: number
+ *       month:
+ *         type: number
+ *       quarter:
+ *         type: number
+ *       dayOfWeek:
+ *         type: number
+ * 
+ *   AnalyticRankTimeBody:
+ *     type: object
+ *     properties:
+ *       year:
+ *         type: number
+ *       month:
+ *         type: number
+ *       quarter:
+ *         type: number
  */
 
 /**
@@ -381,6 +403,22 @@ router.get('/reach/get', reachController.get)
  *           name: _shopId
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *         - in: query
+ *           name: year
+ *           type: number
+ *         - in: query
+ *           name: quarter
+ *           type: number
+ *         - in: query
+ *           name: month
+ *           type: number
+ *         - in: query
+ *           name: dayOfWeek
+ *           type: number
  *       responses:
  *         200:
  *           description: return result._id as hour in a day, result.count as number of reach in that hour
@@ -406,6 +444,22 @@ router.get('/analytic/reachCount', analyticController.getReachCountPerHours)
  *           name: _shopId
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *         - in: query
+ *           name: year
+ *           type: number
+ *         - in: query
+ *           name: quarter
+ *           type: number
+ *         - in: query
+ *           name: month
+ *           type: number
+ *         - in: query
+ *           name: dayOfWeek
+ *           type: number
  *       responses:
  *         200:
  *           description: return result._id as age_label, result.count as number of reach in that label
@@ -431,6 +485,22 @@ router.get('/analytic/reachAge', analyticController.getReachAge)
  *           name: _shopId
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *         - in: query
+ *           name: year
+ *           type: number
+ *         - in: query
+ *           name: quarter
+ *           type: number
+ *         - in: query
+ *           name: month
+ *           type: number
+ *         - in: query
+ *           name: dayOfWeek
+ *           type: number
  *       responses:
  *         200:
  *           description: total mean score and count means number of calculated reviews
@@ -456,6 +526,19 @@ router.get('/analytic/reviewShopScore', analyticController.getReviewScore)
  *           name: _shopId
  *           type: number
  *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *         - in: query
+ *           name: year
+ *           type: number
+ *         - in: query
+ *           name: quarter
+ *           type: number
+ *         - in: query
+ *           name: month
+ *           type: number
  *       responses:
  *         200:
  *           description: ask me for more info
