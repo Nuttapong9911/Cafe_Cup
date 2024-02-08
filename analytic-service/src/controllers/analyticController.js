@@ -1,8 +1,32 @@
+const axios = require('axios')
+
 const Reach = require('../models/reach')
 const Review = require('../models/review')
 
+const validateToken = async (token) => {
+  let validatedResult
+  try {
+    validatedResult = await axios.get(`http://auth-node:3002/validateToken`,
+    {
+      headers:
+      {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'token': token
+      }
+    }
+  )
+  } catch (error) {
+    throw ({name: 'ValidateError', message: 'Token Validation Failed'}) 
+  }
+  if (!validatedResult && validatedResult.status !== 200 && validatedResult.data.status !== 'ok') {
+    throw ({name: 'ValidateError', message: 'Token Validation Failed'}) 
+  }
+}
+
 const getReachCountPerHours = async (req, res) => {
   try {
+    await validateToken(req.headers.token)
+  
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
@@ -59,6 +83,8 @@ const getReachCountPerHours = async (req, res) => {
 
 const getReachAge = async (req, res) => {
   try {
+    await validateToken(req.headers.token)
+
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
@@ -120,6 +146,8 @@ const getReachAge = async (req, res) => {
 
 const getReviewScore = async (req, res) => {
   try {
+    await validateToken(req.headers.token)
+
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
@@ -179,6 +207,8 @@ const getReviewScore = async (req, res) => {
 
 const getRevieweRank = async (req, res) => {
   try {
+    await validateToken(req.headers.token)
+
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
@@ -338,8 +368,6 @@ const getRevieweRank = async (req, res) => {
     res.status(400).json(error)
   }
 }
-
-
 
 module.exports = {
   getReachCountPerHours,
