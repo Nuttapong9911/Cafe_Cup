@@ -782,6 +782,25 @@ router.delete('/customer/delete', customerController.deleteByID)
  */
 router.get('/customer/recommend', middlewareAuth, recommendController.calculateShop)
 
+/**
+ * @swagger
+ * paths:
+ *   /validateToken:
+ *     get:
+ *       summary: validate token in header
+ *       parameters:
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *       responses:
+ *         200:
+ *           description: status ok
+ *         400:
+ *           description: error
+ */
+router.get('/validateToken', middlewareAuth, (req, res) => res.status(200).json({status: 'ok'}))
+
 // for dev
 router.post('/shop/inserttest', shopController.randomInsertShop)
 router.post('/customer/inserttest', customerController.randCreateCustomer)
