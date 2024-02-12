@@ -789,6 +789,10 @@ router.get('/customer/recommend', middlewareAuth, recommendController.calculateS
  *     get:
  *       summary: validate token in header
  *       parameters:
+ *         - in: query
+ *           name: _id
+ *           type: number
+ *           required: true
  *         - in: header
  *           name: token
  *           type: string
