@@ -15,6 +15,7 @@ module.exports = async (req, res, next) => {
     const { _id } = req.query
     if (!token) throw({name: 'userValidateError', message: 'token not found'})
 
+    
     // [ ] flag skip for dev
     
     if (token === 'skip') return next()

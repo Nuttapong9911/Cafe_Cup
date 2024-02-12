@@ -3,11 +3,12 @@ const axios = require('axios')
 const Reach = require('../models/reach')
 const Review = require('../models/review')
 
-const validateToken = async (token) => {
+const validateToken = async (token, _id) => {
   let validatedResult
   try {
     validatedResult = await axios.get(`http://auth-node:3002/validateToken`,
     {
+      params: { _id: parseInt(_id, 10) },
       headers:
       {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -29,11 +30,12 @@ const validateToken = async (token) => {
 
 const getReachCountPerHours = async (req, res) => {
   try {
-    await validateToken(req.headers.token)
-  
+
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
+
+    await validateToken(req.headers.token, req.query._shopId)
 
     const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
@@ -95,11 +97,11 @@ const getReachCountPerHours = async (req, res) => {
 
 const getReachAge = async (req, res) => {
   try {
-    await validateToken(req.headers.token)
-
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
+
+    await validateToken(req.headers.token, req.query._shopId)
 
     const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
@@ -162,11 +164,11 @@ const getReachAge = async (req, res) => {
 
 const getReviewScore = async (req, res) => {
   try {
-    await validateToken(req.headers.token)
-
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
+
+    await validateToken(req.headers.token, req.query._shopId)
     
     const { year, month, quarter, dayOfWeek } = req.query
     const { _shopId } = req.query
@@ -231,11 +233,11 @@ const getReviewScore = async (req, res) => {
 
 const getRevieweRank = async (req, res) => {
   try {
-    await validateToken(req.headers.token)
-
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
+
+    await validateToken(req.headers.token, req.query._shopId)
 
     const { year, month, quarter } = req.query
     const { _shopId } = req.query
