@@ -19,7 +19,7 @@ const getById = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    res.status(200).json(await Customer.find(req.body))
+    res.status(200).json(await Customer.find(req.query))
   } catch (error) {
     res.status(400).json(error)
   }

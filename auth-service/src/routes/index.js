@@ -552,6 +552,11 @@ router.get('/shop/getById', middlewareAuth, shopController.getById)
  *   /shop/get:
  *     get:
  *       summary: get all shops
+ *       parameters:
+ *         - in: query
+ *           name: shop
+ *           schema:
+ *             $ref: '#/definitions/ShopInput'
  *       responses:
  *         200:
  *           description: return array of shops
@@ -694,6 +699,11 @@ router.get('/customer/getById', middlewareAuth, customerController.getById)
  *   /customer/get:
  *     get:
  *       summary: get all customer
+ *       parameters:
+ *         - in: query
+ *           name: customer
+ *           schema:
+ *             $ref: '#/definitions/CustomerInput'
  *       responses:
  *         200:
  *           description: return array of customer
