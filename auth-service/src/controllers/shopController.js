@@ -5,8 +5,6 @@ const { subDistrictList } = require('../constants/shop')
 const Shop = require('../models/shop')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
-
-// const getRandomInt = (max) => Math.floor(Math.random() * max) 
 const getById = async (req,res) => {
   try {
     res.status(200).json(await Shop.findOne(req.query))

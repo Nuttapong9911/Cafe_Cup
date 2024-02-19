@@ -17,13 +17,13 @@ services:
       - .:/usr/src/app
     working_dir: /usr/src/app
     environment:
-      - APP_PORT=3001
+      - APP_PORT=3003
       - MONGO_URI=mongodb://promotion-mongo:27017
       - DB_USERNAME=root
       - DB_PASSWORD=password
       - DB_DATABASENAME=promotion
     ports:
-      - 3003:3001
+      - 3003:3003
     command: ['/bin/sh', '-c', 'yarn && yarn dev']
     depends_on:
       - promotion-mongo

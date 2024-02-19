@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const Customer = require('../models/customer')
-const getRandomInt = require('../libs/randomInt')
+const getRandomInt = require('../common/randomInt')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req, res) => {
