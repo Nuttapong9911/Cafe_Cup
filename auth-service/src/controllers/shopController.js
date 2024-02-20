@@ -58,9 +58,7 @@ const get = async (req,res) => {
           ...(customerGroup && { customerGroup: { $regex: customerGroup } }),
         }
       },
-      { $limit: 50 }
     ])
-
 
     if (isAvailable) {
       let available = Result.filter(shop => {
