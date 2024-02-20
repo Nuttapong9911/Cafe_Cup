@@ -32,9 +32,10 @@ const get = async (req,res) => {
       smokingZone,
       photoSpots,
       noice,
-      customerGroup
+      customerGroup,
+      isAvailable
     } = req.body
-    const Result = await Shop.aggregate([
+    let Result = await Shop.aggregate([
       {
         $match: 
         {
@@ -57,10 +58,27 @@ const get = async (req,res) => {
           ...(customerGroup && { customerGroup: { $regex: customerGroup } }),
         }
       },
-      { $limit: 5 }
+      { $limit: 50 }
     ])
-    res.status(200).json(Result)
+
+
+    if (isAvailable) {
+      let available = Result.filter(shop => {
+        const open = new Date()
+        open.setHours(shop.timeOpen.split(':')[0])
+        open.setMinutes(shop.timeOpen.split(':')[1])
+        
+        const close = new Date()
+        close.setHours(shop.timeClose.split(':')[0])
+        close.setMinutes(shop.timeClose.split(':')[1])
+
+        const now = new Date()
+        return open <= now && now <= close
+      })
+      res.status(200).json(available)
+    }else res.status(200).json(Result)
   } catch (error) {
+    console.log(error)
     res.status(400).json(error)
   }
 }

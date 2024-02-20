@@ -343,10 +343,8 @@ const router = express.Router()
  *         collectionFormat: csv
  *         items:
  *           type: number
- *       timeOpen:
- *         type: string
- *       timeClose:
- *         type: string
+ *       isAvailable:
+ *         type: bool
  *       singleSeat:
  *         type: boolean
  *       doubleSeat:
