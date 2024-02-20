@@ -267,6 +267,13 @@ router.get('/review/getById', reviewController.getById)
  *   /review/get:
  *     get:
  *       summary: get all reviews
+ *       parameters:
+ *         - in: query
+ *           name: _shopId
+ *           type: number
+ *         - in: query
+ *           name: _customerId
+ *           type: number
  *       responses:
  *         200:
  *           description: return array of reviews
@@ -383,6 +390,13 @@ router.get('/reach/getById', reachController.getById)
  *   /reach/get:
  *     get:
  *       summary: get all reach
+ *       parameters:
+ *         - in: query
+ *           name: _shopId
+ *           type: number
+ *         - in: query
+ *           name: _customerId
+ *           type: number
  *       responses:
  *         200:
  *           description: return array of reachs

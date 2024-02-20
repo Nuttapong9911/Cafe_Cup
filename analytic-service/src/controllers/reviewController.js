@@ -16,7 +16,11 @@ const getById = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    res.status(200).json(await Review.find(req.body))
+    const { _shopId, _customerId } = req.query
+    res.status(200).json(await Review.find({
+      ...(_shopId && { _shopId: parseInt(_shopId, 10) }),
+      ...(_customerId && { _customerId: parseInt(_customerId, 10) }),
+    }))
   } catch (error) {
     res.status(400).json(error)
   }
