@@ -15,7 +15,51 @@ const getById = async (req,res) => {
 
 const get = async (req,res) => {
   try {
-    res.status(200).json(await Shop.find(req.query))
+    const { 
+      name,
+      country,
+      province,
+      district,
+      subDistrict,
+      daysOpen,
+      singleSeat,
+      doubleSeat,
+      largeSeat,
+      wifi,
+      powerPlugs,
+      conferenceRoom,
+      toilet,
+      smokingZone,
+      photoSpots,
+      noice,
+      customerGroup
+    } = req.body
+    const Result = await Shop.aggregate([
+      {
+        $match: 
+        {
+          ...(name && { name: { $regex: name } }),
+          ...(country && { "address.country": { $regex: country } }),
+          ...(province && { "address.province": { $regex: province } }),
+          ...(district && { "address.district": { $regex: district } }),
+          ...(subDistrict && { "address.subDistrict": { $regex: subDistrict } }),
+          ...(daysOpen && { daysOpen: { $in: daysOpen } }),
+          ...(singleSeat && { singleSeat: { $ne: 0 } }),
+          ...(doubleSeat && { doubleSeat: { $ne: 0 } }),
+          ...(largeSeat && { largeSeat: { $ne: 0 } }),
+          ...(wifi && { wifi: !!wifi }),
+          ...(powerPlugs && { powerPlugs: !!powerPlugs }),
+          ...(conferenceRoom && { conferenceRoom: !!conferenceRoom }),
+          ...(toilet && { toilet: !!toilet }),
+          ...(smokingZone && { smokingZone: !!smokingZone }),
+          ...(photoSpots && { photoSpots: { $regex: photoSpots } }),
+          ...(noice && { noice: { $regex: noice } }),
+          ...(customerGroup && { customerGroup: { $regex: customerGroup } }),
+        }
+      },
+      { $limit: 5 }
+    ])
+    res.status(200).json(Result)
   } catch (error) {
     res.status(400).json(error)
   }
@@ -103,9 +147,9 @@ const deleteByID = async (req, res) => {
 }
 
 const randomInsertShop = async (req, res) => {
-  const shopNum = 500
+  const shopNum = 510
   try {
-    for (let i = 1; i <= shopNum; i++) {
+    for (let i = 501; i <= shopNum; i++) {
       const body = {
         username: `user${i}`,
         password: `pass${i}`,
@@ -119,11 +163,16 @@ const randomInsertShop = async (req, res) => {
         daysOpen: randDay(i),
         timeOpen: randTimeOpen(i),
         timeClose: randTimeClose(i),
-        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
         singleSeat: i % 5 >= 2 ? 3 : 6,
         doubleSeat: i % 5 >= 2 ? 2 : 4,
         largeSeat: i % 5 >= 2 ? 0 : 4,
-        consumerGroup: randConsumerGroup(i)
+        wifi:  i % 2 === 0,
+        powerPlugs:  i % 2 === 0,
+        conferenceRoom:  i % 2 === 0,
+        smokingZone:  i % 2 === 0,
+        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
+        photoSpots: randPhotoSpots(i),
+        customerGroup: randCustomerGroup(i)
       }
       await createShop(body)      
     }
@@ -179,12 +228,17 @@ const randTimeClose = (i) => {
   else if (i % 10 <= 9) return '23:00'
   else return '23:59'
 }
-const randConsumerGroup = (i) => {
+const randCustomerGroup = (i) => {
   if (i % 5 === 1) return 'STUDENT'
   else if (i % 5 === 2) return 'OFFICE_WORKER'
   else if (i % 5 === 3) return 'TOURIST'
   else if (i % 5 === 4) return 'DIGITAL_NORMAD'
   else return 'TAKEAWAY'
+}
+const randPhotoSpots = (i) => {
+  if (i % 3 === 0) return 'FEW'
+  else if (i % 3 === 1) return 'MEDIUM'
+  else return 'MUCH'
 }
 
 

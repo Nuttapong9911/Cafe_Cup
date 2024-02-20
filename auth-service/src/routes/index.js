@@ -325,6 +325,54 @@ const router = express.Router()
  *       token:
  *         type: string 
  * 
+ *   ShopSearchInput:
+ *     type: object
+ *     properties:
+ *       name:
+ *         type: string
+ *       country:
+ *         type: string
+ *       province:
+ *         type: string
+ *       district:
+ *         type: string
+ *       subDistrict:
+ *         type: string
+ *       daysOpen:
+ *         type: array
+ *         collectionFormat: csv
+ *         items:
+ *           type: number
+ *       timeOpen:
+ *         type: string
+ *       timeClose:
+ *         type: string
+ *       singleSeat:
+ *         type: boolean
+ *       doubleSeat:
+ *         type: boolean
+ *       largeSeat:
+ *         type: boolean
+ *       wifi:
+ *         type: boolean
+ *       powerPlugs:
+ *         type: boolean
+ *       conferenceRoom:
+ *         type: boolean
+ *       toilet:
+ *         type: boolean
+ *       smokingZone:
+ *         type: boolean
+ *       photoSpots:
+ *         type: string
+ *         enum: ['FEW', 'MEDIUM', 'MUCH']
+ *       noice:
+ *         type: string
+ *         enum: ['QUITE', 'NORMAL']
+ *       customerGroup:
+ *         type: string
+ *         enum: ['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY']
+ * 
  *   LoginInput:
  *     type: object
  *     required:
@@ -550,20 +598,20 @@ router.get('/shop/getById', middlewareAuth, shopController.getById)
  * @swagger
  * paths:
  *   /shop/get:
- *     get:
+ *     post:
  *       summary: get all shops
- *       parameters:
- *         - in: query
- *           name: shop
- *           schema:
- *             $ref: '#/definitions/ShopInput'
+ *       requestBody:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/ShopSearchInput'
  *       responses:
  *         200:
  *           description: return array of shops
  *         400:
  *           description: fetched failed
  */
-router.get('/shop/get', shopController.get)
+router.post('/shop/get', shopController.get)
 
 /**
  * @swagger
@@ -799,10 +847,6 @@ router.get('/customer/recommend', middlewareAuth, recommendController.calculateS
  *     get:
  *       summary: validate token in header
  *       parameters:
- *         - in: query
- *           name: _id
- *           type: number
- *           required: true
  *         - in: header
  *           name: token
  *           type: string

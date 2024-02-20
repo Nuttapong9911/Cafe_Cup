@@ -12,7 +12,6 @@ module.exports = async (req, res, next) => {
     // action ของ route นัั้นจะสำเร็จ (ถ้า data ถูกต้อง)
 
     const { token } = req.headers
-    const { _id } = req.query
     if (!token) throw({name: 'userValidateError', message: 'token not found'})
 
     
@@ -27,10 +26,6 @@ module.exports = async (req, res, next) => {
       throw({name: 'userValidateError', message: 'invalid token'})
 
     const _tokenId = parseInt(decodedToken._id, 10)
-
-    // validate _id
-    if (parseInt(_id, 10) !== _tokenId)
-      throw({name: 'userValidateError', message: 'invalid _id'})
 
     // validate role
     if (decodedToken.role === 'customer' && (await Customer.findOne({ _id: _tokenId }))) {
