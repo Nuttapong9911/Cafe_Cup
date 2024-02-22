@@ -73,12 +73,13 @@ const getShopCodes = async (req, res) => {
 
 const getCustomerCodes = async (req, res) => {
   try {
-    const { _customerId } = req.query
+    const { _customerId, _shopId } = req.query
     if (!(_customerId)) throw ({name: 'ParameterError', message: 'Missing required input'}) 
 
     await validateCodes(_customerId)
     const claimedCode = await Promotion.find({
-      _customerId,
+      ...(_shopId && { _shopId: parseInt(_shopId, 10) }),
+      _customerId: parseInt(_customerId, 10),
       status: 'CLAIMED'
     })
 

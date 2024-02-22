@@ -269,6 +269,9 @@ router.get('/promo/getShopCodes', promotionController.getShopCodes)
  *           name: _customerId
  *           type: number
  *           required: true
+ *         - in: query
+ *           name: _shopId
+ *           type: number
  *       responses:
  *         200:
  *           description: return 2 array of codes (activated last 20 records)
