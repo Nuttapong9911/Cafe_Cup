@@ -1,7 +1,7 @@
 const express = require('express')
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsDoc = require('swagger-jsdoc')
-
+const cors = require('cors')
 require('./connection/mongo').connect()
 const PORT = process.env.APP_PORT
 const routes = require('./routes/index')
@@ -9,7 +9,9 @@ const routes = require('./routes/index')
 const app = express()
 app.use(express.json())
 app.use(routes)
-
+app.use(
+  cors()
+);
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
