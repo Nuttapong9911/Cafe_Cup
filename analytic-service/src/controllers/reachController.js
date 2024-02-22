@@ -43,10 +43,10 @@ const create = async (req, res) => {
 // for dev
 const createRandomReach = async(req, res) => {
   try {
-    const num = req.body.reachNumber
+    const { reachNumber, _shopId, year, _customerId } = req.body
     const users = await axios.get(`http://auth-node:3002/customer/get`, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
     if (!users) throw ({name: 'Error', message: 'No any user in database'})
-    for (let i = 0; i < num; i++) {
+    for (let i = 0; i < reachNumber; i++) {
       const _customerId =  Math.floor(Math.random() * users.data.length) + 1
 
       const user = await axios.get(`http://auth-node:3002/customer/getById`,
@@ -59,11 +59,12 @@ const createRandomReach = async(req, res) => {
 
       if(!user) throw ({name: 'ParameterError', message: 'User not found.'}) 
       
+      
       let reachInput = {
-        _shopId: req.body._shopId,
-        _customerId: Math.floor(Math.random() * users.data.length) + 1,
+        _shopId: _shopId,
+        _customerId: _customerId ? parseInt(_customerId, 10) : Math.floor(Math.random() * users.data.length) + 1,
         customerAge: user.data.age,
-        timestamp: genDate(new Date(2020, 1, 1), new Date())
+        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
       }
 
       await createReach(reachInput)

@@ -569,4 +569,6 @@ router.get('/analytic/reviewRank', analyticController.getRevieweRank)
 // for test
 router.post('/reach/inserttest', reachController.createRandomReach)
 router.post('/review/inserttest', reviewController.insertTest)
+router.post('/review/insertHighTest', reviewController.insertHighReviewTest)
+router.post('/review/insertLowTest', reviewController.insertLowReviewTest)
 module.exports = router

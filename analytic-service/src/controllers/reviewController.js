@@ -78,7 +78,7 @@ const deleteById = async (req, res) => {
 // for test
 const insertTest = async (req, res) => {
   try {
-    const { reviewNumber, _shopId } = req.body
+    const { reviewNumber, _shopId, year } = req.body
     
     const users = await axios.get(`http://auth-node:3002/customer/get`, 
       { 
@@ -97,7 +97,73 @@ const insertTest = async (req, res) => {
         parking: Math.floor(Math.random() * 5) + 1,
         worthiness: Math.floor(Math.random() * 5) + 1,
         comment: "random comment",
-        timestamp: genDate(new Date(2020, 1, 1), new Date())
+        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
+      }
+
+      await createReview(reviewInput)
+    }
+
+    res.status(200).json({ status: "ok" })
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const insertHighReviewTest = async (req, res) => {
+  try {
+    const { reviewNumber, _shopId, year } = req.body
+    
+    const users = await axios.get(`http://auth-node:3002/customer/get`, 
+      { 
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+    if (!users) throw ({ name: 'Error', message: 'No any user in database' })
+    
+    for (let i = 0; i < reviewNumber; i++) {
+      const reviewInput = {
+        _shopId,
+        _customerId: Math.floor(Math.random() * users.data.length) + 1,
+        _menuId: 1,
+        flavour: Math.floor(Math.random() * 2) + 4,
+        place: Math.floor(Math.random() * 2) + 4,
+        service: Math.floor(Math.random() * 2) + 4,
+        parking: Math.floor(Math.random() * 2) + 4,
+        worthiness: Math.floor(Math.random() * 2) + 4,
+        comment: "random comment",
+        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
+      }
+
+      await createReview(reviewInput)
+    }
+
+    res.status(200).json({ status: "ok" })
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const insertLowReviewTest = async (req, res) => {
+  try {
+    const { reviewNumber, _shopId, year } = req.body
+    
+    const users = await axios.get(`http://auth-node:3002/customer/get`, 
+      { 
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+    if (!users) throw ({ name: 'Error', message: 'No any user in database' })
+    
+    for (let i = 0; i < reviewNumber; i++) {
+      const reviewInput = {
+        _shopId,
+        _customerId: Math.floor(Math.random() * users.data.length) + 1,
+        _menuId: 1,
+        flavour: Math.floor(Math.random() * 2) + 1,
+        place: Math.floor(Math.random() * 2) + 1,
+        service: Math.floor(Math.random() * 2) + 1,
+        parking: Math.floor(Math.random() * 2) + 1,
+        worthiness: Math.floor(Math.random() * 2) + 1,
+        comment: "random comment",
+        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
       }
 
       await createReview(reviewInput)
@@ -128,5 +194,7 @@ module.exports = {
   create,
   update,
   deleteById,
-  insertTest
+  insertTest,
+  insertHighReviewTest,
+  insertLowReviewTest
 }
