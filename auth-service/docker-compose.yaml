@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-  
   auth-mongo:
     image: mongo:7.0
     environment:
@@ -10,6 +9,8 @@ services:
       - 27018:27017
     volumes:
       - ./mongodata/auth:/data/db
+    networks:
+      - cafemicroservicenetwork
 
   auth-node:
     image: node:alpine
@@ -27,8 +28,9 @@ services:
     command: ['/bin/sh', '-c', 'yarn && yarn dev']
     depends_on:
       - auth-mongo
-  
+    networks:
+      - cafemicroservicenetwork
+
 networks:
-    default:
-        external:
-            name: cafemicroservicenetwork
+  cafemicroservicenetwork:
+    external: true
