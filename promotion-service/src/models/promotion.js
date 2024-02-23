@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const promotionSchema = new mongoose.Schema({
   _id: { type: Number },
-  _shopId: { type: String, required: true },
+  _shopId: { type: Number, required: true },
   codeString: { type: String },
   dateCreate: { type: Date },
   dateExpired: { type: Date },
