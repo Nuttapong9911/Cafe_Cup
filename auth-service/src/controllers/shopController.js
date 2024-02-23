@@ -185,9 +185,47 @@ const randomInsertShop = async (req, res) => {
         wifi:  i % 2 === 0,
         powerPlugs:  i % 2 === 0,
         conferenceRoom:  i % 2 === 0,
+        toilet: i % 2 === 0,
         smokingZone:  i % 2 === 0,
-        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
         photoSpots: randPhotoSpots(i),
+        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
+        customerGroup: randCustomerGroup(i)
+      }
+      await createShop(body)      
+    }
+    res.status(200).json({status: 'ok'})
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const insertTestForRcmdAlgo = async (req, res) => {
+  try {
+    // shop group STUDENT
+    for (let i = 1; i <= shopNum; i++) {
+      const body = {
+        username: `user-g1-rcmd-${i}`,
+        password: `password`,
+        name: `shop-for-STUDENT-${i}`,
+        address: {
+          subDistrict: 'สุเทพ'
+        },
+        menus: [{
+          price: randPrice(i)
+        }],
+        daysOpen: randDay(i),
+        timeOpen: randTimeOpen(i),
+        timeClose: randTimeClose(i),
+        singleSeat: i % 5 >= 2 ? 3 : 6,
+        doubleSeat: i % 5 >= 2 ? 2 : 4,
+        largeSeat: i % 5 >= 2 ? 0 : 4,
+        wifi:  i % 2 === 0,
+        powerPlugs:  i % 2 === 0,
+        conferenceRoom:  i % 2 === 0,
+        toilet: i % 2 === 0,
+        smokingZone:  i % 2 === 0,
+        photoSpots: randPhotoSpots(i),
+        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
         customerGroup: randCustomerGroup(i)
       }
       await createShop(body)      
