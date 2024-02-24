@@ -77,13 +77,25 @@ const getCustomerCodes = async (req, res) => {
     if (!(_customerId)) throw ({name: 'ParameterError', message: 'Missing required input'}) 
 
     await validateCodes(_customerId)
-    const claimedCode = await Promotion.find({
+    const claimedCodes = await Promotion.find({
       ...(_shopId && { _shopId: parseInt(_shopId, 10) }),
       _customerId: parseInt(_customerId, 10),
       status: 'CLAIMED'
     })
 
-    res.status(200).json(claimedCode)
+    const codeWithData = await Promise.all(claimedCodes.map(async (claimedCode) => {
+      const shopResult = await axios.get(`http://auth-node:3002/shop/getById`, {
+        params: { _id: parseInt(claimedCode._shopId, 10) },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      })
+      if (!(shopResult && shopResult.data)) throw ({ name: 'ParameterError', message: 'User not found.' })
+      return { ...claimedCode["_doc"], name: shopResult.data.name }
+    }));
+
+    res.status(200).json(codeWithData)
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
@@ -145,7 +157,7 @@ const customerActivatedCode = async (req, res) => {
         status: 'ACTIVATED',
         usedTimestamp: new Date()
       },
-      { new: true}
+      { new: true }
     )
 
     res.status(200).json(result)
