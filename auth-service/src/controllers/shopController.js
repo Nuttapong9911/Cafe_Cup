@@ -1,8 +1,9 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { subDistrictList } = require('../constants/shop')
 const Shop = require('../models/shop')
+const getRandomInt = require('../common/randomInt')
+const { subDistrictList } = require('../constants/shop')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req,res) => {
@@ -202,7 +203,7 @@ const randomInsertShop = async (req, res) => {
 const insertTestForRcmdAlgo = async (req, res) => {
   try {
     // shop group STUDENT
-    for (let i = 1; i <= shopNum; i++) {
+    for (let i = 1; i <= 20; i++) {
       const body = {
         username: `user-g1-rcmd-${i}`,
         password: `password`,
@@ -210,23 +211,210 @@ const insertTestForRcmdAlgo = async (req, res) => {
         address: {
           subDistrict: 'สุเทพ'
         },
-        menus: [{
-          price: randPrice(i)
-        }],
+        menus: [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 40
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 45
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 50
+          },
+        ],
         daysOpen: randDay(i),
-        timeOpen: randTimeOpen(i),
-        timeClose: randTimeClose(i),
-        singleSeat: i % 5 >= 2 ? 3 : 6,
-        doubleSeat: i % 5 >= 2 ? 2 : 4,
-        largeSeat: i % 5 >= 2 ? 0 : 4,
-        wifi:  i % 2 === 0,
-        powerPlugs:  i % 2 === 0,
-        conferenceRoom:  i % 2 === 0,
-        toilet: i % 2 === 0,
-        smokingZone:  i % 2 === 0,
+        timeOpen: '08:00',
+        timeClose: getRandomInt(1, 2) === 1 ? '19:00': '20:30',
+        singleSeat: getRandomInt(1, 10) <= 3 ? 10 : 11,
+        doubleSeat: 0,
+        largeSeat: 0,
+        wifi: true,
+        powerPlugs:  true,
+        conferenceRoom:  true,
+        toilet: true,
+        smokingZone: false,
         photoSpots: randPhotoSpots(i),
-        noice:  i % 2 === 0 ? 'QUITE' : 'NORMAL',
-        customerGroup: randCustomerGroup(i)
+        noice: 'QUITE',
+        customerGroup: 'STUDENT'
+      }
+      await createShop(body)      
+    }
+
+    // shop group TOURISTS
+    for (let i = 1; i <= 20; i++) {
+      const body = {
+        username: `user-g2-rcmd-${i}`,
+        password: `password`,
+        name: `shop-for-TOURISTS-${i}`,
+        address: {
+          subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'ช้างม่อย',
+        },
+        menus: 
+        getRandomInt(1,2) === 1 ?
+        [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 60
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 65
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 70
+          },
+        ]
+        :
+        [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 90
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 100
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 110
+          },
+        ],
+        daysOpen: randDay(i),
+        timeOpen: getRandomInt(1, 2) === 1 ? '08:00': '13:00',
+        timeClose: '19:00',
+        singleSeat: getRandomInt(1, 10) <= 3 ? 10 : 11,
+        doubleSeat: 0,
+        largeSeat: 0,
+        wifi: true,
+        powerPlugs:  false,
+        conferenceRoom:  false,
+        toilet: true,
+        smokingZone: false,
+        photoSpots: randPhotoSpots(i),
+        noice: getRandomInt(1, 2) === 1 ? 'QUITE' : 'NORMAL',
+        customerGroup: 'TOURIST'
+      }
+      await createShop(body)      
+    }
+
+    // shop group OFFICE
+    for (let i = 1; i <= 20; i++) {
+      const body = {
+        username: `user-g3-rcmd-${i}`,
+        password: `password`,
+        name: `shop-for-OFFICE-${i}`,
+        address: {
+          subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'แม่เหียะ',
+        },
+        menus: 
+        getRandomInt(1,2) === 1 ?
+        [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 60
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 65
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 70
+          },
+        ]
+        :
+        [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 90
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 100
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 110
+          },
+        ],
+        daysOpen: randDay(i),
+        timeOpen: '08:00',
+        timeClose: '19:00',
+        singleSeat: 12,
+        doubleSeat: 0,
+        largeSeat: 0,
+        wifi: true,
+        powerPlugs:  true,
+        conferenceRoom:  true,
+        toilet: true,
+        smokingZone: true,
+        photoSpots: randPhotoSpots(i),
+        noice: 'NORMAL',
+        customerGroup: 'OFFICE'
+      }
+      await createShop(body)      
+    }
+
+    // shop group SECRET_SHOP
+    for (let i = 1; i <= 20; i++) {
+      const body = {
+        username: `user-g4-rcmd-${i}`,
+        password: `password`,
+        name: `shop-for-SECRET_SHOP-${i}`,
+        address: {
+          subDistrict: subDistrictList[getRandomInt(0, 16)],
+        },
+        menus: 
+        [
+          {
+          name: 'menu 1',
+          category: 'drinks',
+          price: 90
+          },
+          {
+            name: 'menu 2',
+            category: 'drinks',
+            price: 100
+          },
+          {
+            name: 'menu 3',
+            category: 'drinks',
+            price: 110
+          },
+        ],
+        daysOpen: randDay(i),
+        timeOpen: '05:00',
+        timeClose: '18:00',
+        singleSeat: 7,
+        doubleSeat: 0,
+        largeSeat: 0,
+        wifi: false,
+        powerPlugs:  false,
+        conferenceRoom:  false,
+        toilet: false,
+        smokingZone: false,
+        photoSpots: randPhotoSpots(i),
+        noice: 'QUITE',
+        customerGroup: 'DIGITAL_NOMAD'
       }
       await createShop(body)      
     }
@@ -305,4 +493,5 @@ module.exports = {
   deleteByID,
 
   randomInsertShop,
+  insertTestForRcmdAlgo
 }

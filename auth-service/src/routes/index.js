@@ -858,7 +858,10 @@ router.get('/customer/recommend', middlewareAuth, recommendController.calculateS
 router.get('/validateToken', middlewareAuth, (req, res) => res.status(200).json({status: 'ok'}))
 
 // for dev
-router.post('/shop/inserttest', shopController.randomInsertShop)
+
 router.post('/customer/inserttest', customerController.randCreateCustomer)
+
+router.post('/shop/inserttest', shopController.randomInsertShop)
+router.post('/shop/insertTestRcmd', shopController.insertTestForRcmdAlgo)
 
 module.exports = router
