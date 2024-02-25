@@ -369,7 +369,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
         smokingZone: true,
         photoSpots: randPhotoSpots(i),
         noice: 'NORMAL',
-        customerGroup: 'OFFICE'
+        customerGroup: 'OFFICE_WORKER'
       }
       await createShop(body)      
     }
@@ -414,7 +414,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
         smokingZone: false,
         photoSpots: randPhotoSpots(i),
         noice: 'QUITE',
-        customerGroup: 'DIGITAL_NOMAD'
+        customerGroup: 'TAKEAWAY'
       }
       await createShop(body)      
     }

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const Customer = require('../models/customer')
 const getRandomInt = require('../common/randomInt')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
+const { subDistrictList } = require('../constants/shop')
 
 const getById = async (req, res) => {
   try {
@@ -110,80 +111,50 @@ const deleteByID = async (req, res) => {
 
 // for test
 const randCreateCustomer = async (req, res) => {
+  const amount = 10
   try {
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= amount; i++) {
       let body = {
         username: `user-g1-${i}`,
-        password: `pass-g1-${i}`,
-        name: `user-g1-${i}`,
+        password: `password`,
+        name: `STUDENT ${i}`,
         gender: getRandomInt(1,2) === 1 ? 'MALE' : 'FEMALE',
         age: 'UNDER_22', 
         occupation: 'Student',
-        tags: [
-          {key: 1, value: 'สุเทพ'},
-          {key: 2, value: 'CHEAP'},
-          {key: 3, value: getRandomInt(1,2) === 1 ? 'EVENING' : 'NIGHT'}
-        ]
+        tags: randomTags(1)
       }
       await createCustomer(body)
     }
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= amount; i++) {
       let body = {
         username: `user-g2-${i}`,
-        password: `pass-g2-${i}`,
-        name: `user-g2-${i}`,
-        gender: 'FEMALE',
+        password: `password`,
+        name: `TOURIST $P{i}`,
+        gender: getRandomInt(1,10) <= 2 ? 'MALE' : 'FEMALE',
         age: getRandomInt(1,2) === 1 ? 'UNDER_22' : '23_TO_40',
-        tags: [
-          {key: 1, value: getRandomInt(1,2) === 1 ? 'สุเทพ' : 'แม่เหียะ'},
-          {key: 3, value: 'AFTERNOON'},
-          {key: 6, value: 'TOURIST'}
-        ]
+        tags: randomTags(2)
       }
       await createCustomer(body)
     }
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= amount; i++) {
       let body = {
         username: `user-g3-${i}`,
-        password: `pass-g3-${i}`,
-        name: `user-g3-${i}`,
+        password: `password`,
+        name: `OFFICE_WORKIER ${i}`,
         gender: getRandomInt(1,2) === 1 ? 'MALE': 'FEMALE',
-        age: '23_TO_40',
-        tags: [
-          {key: 3, value: getRandomInt(1,2) === 1 ? 'AFTERNOON' : 'EVENING'},
-          {key: 5, value: 'NORMAL'},
-          {key: 6, value: 'OFFICE_WORKER'}
-        ]
+        age: getRandomInt(1,10) <= 7 ? '23_TO_40': '41_TO_60',
+        tags: randomTags(3)
       }
       await createCustomer(body)
     }
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= amount; i++) {
       let body = {
         username: `user-g4-${i}`,
-        password: `pass-g4-${i}`,
-        name: `user-g4-${i}`,
+        password: `password`,
+        name: `TAKEAWAY ${i}`,
         gender: getRandomInt(1,2) === 1 ? 'MALE': 'FEMALE',
-        age: getRandomInt(1,2) === 1 ? '41_TO_60': 'AFTER_61',
-        tags: [
-          {key: 3, value: getRandomInt(1,2) === 1 ? 'AFTERNOON' : 'EVENING'},
-          {key: 4, value: 'LARGE'},
-          {key: 6, value: 'TOURIST'}
-        ]
-      }
-      await createCustomer(body)
-    }
-    for (let i = 1; i <= 20; i++) {
-      let body = {
-        username: `user-g5-${i}`,
-        password: `pass-g5-${i}`,
-        name: `user-g5-${i}`,
-        gender: 'MALE',
-        age: getRandomInt(1,2) === 1 ? '23_TO_40': '41_TO_60',
-        tags: [
-          {key: 1, value: 'หนองหอย'},
-          {key: 2, value: 'HIGH'},
-          {key: 4, value: 'SMALL'}
-        ]
+        age: getRandomInt(1,10) <= 4 ? '41_TO_60': 'AFTER_61',
+        tags: randomTags(4)
       }
       await createCustomer(body)
     }
@@ -192,7 +163,6 @@ const randCreateCustomer = async (req, res) => {
     res.status(400).json(error)
   }
 }
-
 
 // functions
 const createCustomer = async (body) => {
@@ -216,6 +186,112 @@ const createCustomer = async (body) => {
   return result
 }
 
+const randomTag = (key, tagArr) =>{
+  const rand = getRandomInt(0, tagArr.length)
+  return { key, value: tagArr[rand] }
+}
+
+const randomTags = (_groupId) => {
+  let allTags = [1,2,3,4,5,6]
+  let tags = []
+  for (let i = 0; i < 3; i++) {
+    const randIdx = getRandomInt(0, allTags.length)
+    const key = allTags[randIdx]
+    switch (_groupId) {
+      case 1:
+        switch (key) {
+          case 1:
+            tags.push(randomTag(key, ['สุเทพ', 'แม่เหียะ']))
+            break;
+          case 2:
+            tags.push(randomTag(key, ['CHEAP']))
+            break;
+          case 3:
+            tags.push(randomTag(key, ['EVENING', 'NIGHT']))
+            break;
+          case 4:
+            tags.push(randomTag(key, ['SMALL', 'LARGE']))
+            break;
+          case 5:
+            tags.push(randomTag(key, ['QUITE']))
+            break;
+          case 6:
+            tags.push(randomTag(key, ['STUDENT']))
+            break;
+        }
+        break
+      case 2:
+        switch (key) {
+          case 1:
+            tags.push(randomTag(key, ['สุเทพ', 'ช้างม่อย']))
+            break;
+          case 2:
+            tags.push(randomTag(key, ['CHEAP', 'NORMAL', 'HIGH']))
+            break;
+          case 3:
+            tags.push(randomTag(key, ['MORNING', 'AFTERNOON']))
+            break;
+          case 4:
+            tags.push(randomTag(key, ['SMALL', 'LARGE']))
+            break;
+          case 5:
+            tags.push(randomTag(key, ['QUITE', 'NORMAL']))
+            break;
+          case 6:
+            tags.push(randomTag(key, ['TOURIST']))
+            break;
+        }
+        break
+      case 3:
+        switch (key) {
+          case 1:
+            tags.push(randomTag(key, ['สุเทพ']))
+            break;
+          case 2:
+            tags.push(randomTag(key, ['NORMAL', 'HIGH']))
+            break;
+          case 3:
+            tags.push(randomTag(key, ['AFTERNOON', 'EVENING']))
+            break;
+          case 4:
+            tags.push(randomTag(key, ['LARGE']))
+            break;
+          case 5:
+            tags.push(randomTag(key, ['NORMAL']))
+            break;
+          case 6:
+            tags.push(randomTag(key, ['OFFICE_WORKER']))
+            break;
+        }
+        break
+      case 4:
+        switch (key) {
+          case 1:
+            tags.push(randomTag(key, subDistrictList))
+            break;
+          case 2:
+            tags.push(randomTag(key, ['HIGH']))
+            break;
+          case 3:
+            tags.push(randomTag(key, ['EARLYMORNING', 'MORNING', 'AFTERNOON', 'EVENING']))
+            break;
+          case 4:
+            tags.push(randomTag(key, ['SMALL']))
+            break;
+          case 5:
+            tags.push(randomTag(key, ['QUITE']))
+            break;
+          case 6:
+            tags.push(randomTag(key, ['TAKEAWAY']))
+            break;
+        }
+        break
+    }
+    
+    allTags.splice(randIdx, 1)
+  }
+  return tags
+}
 
 module.exports = {
   getById,

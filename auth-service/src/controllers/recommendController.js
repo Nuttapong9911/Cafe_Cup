@@ -118,11 +118,7 @@ const calculateTag = async (shop, tag) => {
     case 3:
       const shopOpen = new Date(`2023-01-01 ${shop.timeOpen}`)
       const shopClose = new Date(`2023-01-01 ${shop.timeClose}`)
-      // console.log(shop.timeOpen)
-      // console.log(shopOpen)
-      // console.log(shop.timeClose)
-      // console.log(shopClose)
-      if (tag.value === 'EARLY MORNING') return shopOpen <= new Date(`2023-01-01 07:00`)
+      if (tag.value === 'EARLYMORNING') return shopOpen <= new Date(`2023-01-01 07:00`)
       else if (tag.value === 'MORNING') return shopOpen <= new Date(`2023-01-01 11:00`) && shopClose >= new Date(`2023-01-01 11:00`)
       else if (tag.value === 'AFTERNOON') return shopOpen <= new Date(`2023-01-01 16:00`) && shopClose >= new Date(`2023-01-01 16:00`)
       else if (tag.value === 'EVENING') return shopOpen <= new Date(`2023-01-01 19:00`) && shopClose >= new Date(`2023-01-01 19:00`)
