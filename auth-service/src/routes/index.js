@@ -344,7 +344,7 @@ const router = express.Router()
  *         items:
  *           type: number
  *       isAvailable:
- *         type: bool
+ *         type: boolean
  *       singleSeat:
  *         type: boolean
  *       doubleSeat:
