@@ -15,28 +15,59 @@ const getById = async (req,res) => {
 }
 
 const get = async (req,res) => {
-  try {
-    const { 
-      name,
-      country,
-      province,
-      district,
-      subDistrict,
-      daysOpen,
-      singleSeat,
-      doubleSeat,
-      largeSeat,
-      wifi,
-      powerPlugs,
-      conferenceRoom,
-      toilet,
-      smokingZone,
-      photoSpots,
-      noice,
-      customerGroup,
-      isAvailable
-    } = req.body
+  const { 
+    name,
+    country,
+    province,
+    district,
+    subDistrict,
+    daysOpen,
+    singleSeat,
+    doubleSeat,
+    largeSeat,
+    wifi,
+    powerPlugs,
+    conferenceRoom,
+    toilet,
+    smokingZone,
+    photoSpots,
+    noice,
+    customerGroup,
+    isAvailable
+  } = req.body
+  let { page, pageSize } = req.query;
+  
+  try {  
+    page = parseInt(page, 10) || 1;
+    pageSize = parseInt(pageSize, 10) || 20;
+
+    const currDate = new Date()
+    const formattedTime = currDate.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Bangkok'
+    });
+    const curTime = parseInt(formattedTime.split(':')[0], 10) * 60 + parseInt(formattedTime.split(':')[1], 10)
     let Result = await Shop.aggregate([
+      {
+        $addFields: {
+          minuteOpen: { $add: [
+            { $multiply: [
+              { $convert: { input: { $arrayElemAt: [{ $split: ['$timeOpen', ':'] }, 0] }, to: "int", onError: 0, } },
+              60
+            ]},
+            { $convert: { input: { $arrayElemAt: [{ $split: ['$timeOpen', ':'] }, 1] }, to: "int", onError: 0, } },
+          ]},
+          minuteClose: { $add: [
+            { $multiply: [
+              { $convert: { input: { $arrayElemAt: [{ $split: ['$timeClose', ':'] }, 0] }, to: "int", onError: 0, } },
+              60
+            ]},
+            { $convert: { input: { $arrayElemAt: [{ $split: ['$timeClose', ':'] }, 1] }, to: "int", onError: 0, } },
+          ]},
+        }
+      },
       {
         $match: 
         {
@@ -46,6 +77,8 @@ const get = async (req,res) => {
           ...(district && { "address.district": { $regex: district } }),
           ...(subDistrict && { "address.subDistrict": { $regex: subDistrict } }),
           ...(daysOpen && { daysOpen: { $in: daysOpen } }),
+          ...(isAvailable && { minuteOpen: { $lte: curTime } }),
+          ...(isAvailable && { minuteClose: { $gte: curTime }}),
           ...(singleSeat && { singleSeat: { $ne: 0 } }),
           ...(doubleSeat && { doubleSeat: { $ne: 0 } }),
           ...(largeSeat && { largeSeat: { $ne: 0 } }),
@@ -59,23 +92,20 @@ const get = async (req,res) => {
           ...(customerGroup && { customerGroup: { $regex: customerGroup } }),
         }
       },
+      {
+        $facet: {
+          metadata: [{ $count: 'totalCount' }],
+          data: [{ $skip: (page - 1) * pageSize }, { $limit: pageSize }],
+        },
+      },
     ])
 
-    if (isAvailable) {
-      let available = Result.filter(shop => {
-        const open = new Date()
-        open.setHours(shop.timeOpen.split(':')[0])
-        open.setMinutes(shop.timeOpen.split(':')[1])
-        
-        const close = new Date()
-        close.setHours(shop.timeClose.split(':')[0])
-        close.setMinutes(shop.timeClose.split(':')[1])
-
-        const now = new Date()
-        return open <= now && now <= close
-      })
-      res.status(200).json(available)
-    }else res.status(200).json(Result)
+    res.status(200).json({
+      shops: {
+        metadata: { totalCount: Result[0].metadata[0].totalCount, page, pageSize },
+        data: Result[0].data,
+      }
+    })
   } catch (error) {
     console.log(error)
     res.status(400).json(error)

@@ -598,6 +598,13 @@ router.get('/shop/getById', middlewareAuth, shopController.getById)
  *   /shop/get:
  *     post:
  *       summary: get all shops
+ *       parameters:
+ *         - in: query
+ *           name: page
+ *           type: number
+ *         - in: query
+ *           name: pageSize
+ *           type: number
  *       requestBody:
  *         content:
  *           application/json:
