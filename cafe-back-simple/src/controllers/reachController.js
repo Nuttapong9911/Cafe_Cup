@@ -124,7 +124,7 @@ const insertMany = async (req, res) => {
   for (let index = 0; index < 50; index++) {
     await Reach.create({
       _userID: Math.floor(Math.random() * 10 + 1),
-      timeStamp: genDate(new Date(2022, 1, 1), new Date())
+      timeStamp: genDate(new Date(2022, 0, 1), new Date())
     })
   }
 

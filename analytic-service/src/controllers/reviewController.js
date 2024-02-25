@@ -97,7 +97,7 @@ const insertTest = async (req, res) => {
         parking: Math.floor(Math.random() * 5) + 1,
         worthiness: Math.floor(Math.random() * 5) + 1,
         comment: "random comment",
-        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
+        timestamp: genDate(new Date(parseInt(year, 10), 0, 1), new Date(parseInt(year, 10)+1, 0, 1))
       }
 
       await createReview(reviewInput)
@@ -130,7 +130,7 @@ const insertHighReviewTest = async (req, res) => {
         parking: Math.floor(Math.random() * 2) + 4,
         worthiness: Math.floor(Math.random() * 2) + 4,
         comment: "random comment",
-        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
+        timestamp: genDate(new Date(parseInt(year, 10), 0, 1), new Date(parseInt(year, 10)+1, 0, 1))
       }
 
       await createReview(reviewInput)
@@ -163,7 +163,7 @@ const insertLowReviewTest = async (req, res) => {
         parking: Math.floor(Math.random() * 2) + 1,
         worthiness: Math.floor(Math.random() * 2) + 1,
         comment: "random comment",
-        timestamp: genDate(new Date(parseInt(year, 10), 1, 1), new Date(parseInt(year, 10)+1, 1, 1))
+        timestamp: genDate(new Date(parseInt(year, 10), 0, 1), new Date(parseInt(year, 10)+1, 0, 1))
       }
 
       await createReview(reviewInput)

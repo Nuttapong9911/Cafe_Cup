@@ -24,7 +24,6 @@ const validateToken = async (token, _id) => {
   }
 }
 
-    
 // RECHECK do we need to check if data is too few ??
 // RECHECK validate time input e.g., quarter without year
 
@@ -63,7 +62,7 @@ const getReachCountPerHours = async (req, res) => {
           'day': { $dayOfMonth: '$timestamp'},
           'dayOfWeek': { $dayOfWeek: '$timestamp'},
           'hour': { $hour: '$timestamp'}
-        }
+        } 
       },
       { 
         $match: 
@@ -81,17 +80,34 @@ const getReachCountPerHours = async (req, res) => {
           count: { $sum: 1 } 
         }
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
+      {
+        $facet: {
+          metadata: [{
+             $group:
+             {
+              _id: 1,
+              totalCount: { $sum: '$count' }
+             }
+          }],
+          data: [],
+        },
+      }
     ])
-    
-    let total = 0
-    result.map((item) => {
-      total += item.count
-    })
 
-    res.status(200).json({result, total})
+    const formattedResult = {
+      status: 200,
+      data: result[0] ? result[0]?.data : [],
+      totalCount: (result[0].metadata[0] && result[0].metadata[0].totalCount) ? result[0].metadata[0].totalCount : 0
+    }
+    
+    res.status(200).json(formattedResult)
   } catch (error) {
-    res.status(400).json(error)
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
   }
 }
 
@@ -148,17 +164,34 @@ const getReachAge = async (req, res) => {
           count: { $sum: 1 }
         }
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
+      {
+        $facet: {
+          metadata: [{
+             $group:
+             {
+              _id: 1,
+              totalCount: { $sum: '$count' }
+             }
+          }],
+          data: [],
+        },
+      }
     ])
 
-    let total = 0
-    result.map(item => {
-      total += item.count
-    })
-  
-    res.status(200).json({result, total})
+    const formattedResult = {
+      status: 200,
+      data: result[0] ? result[0]?.data : [],
+      totalCount: (result[0].metadata[0] && result[0].metadata[0].totalCount) ? result[0].metadata[0].totalCount : 0
+    }
+    
+    res.status(200).json(formattedResult)
   } catch (error) {
-    res.status(400).json(error)
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
   }
 }
 
@@ -225,13 +258,22 @@ const getReviewScore = async (req, res) => {
       }
     ])
 
-    res.status(200).json(result[0])
+    const formattedResult = {
+      status: 200,
+      data: result.length > 0 ? result[0] : [],
+    }
+
+    res.status(200).json(formattedResult)
   } catch (error) {
-    res.status(400).json(error)
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
   }
 }
 
-const getRevieweRank = async (req, res) => {
+const getReviewRank = async (req, res) => {
   try {
     if (!(req.query._shopId)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
@@ -350,48 +392,61 @@ const getRevieweRank = async (req, res) => {
       },
     ])
 
-    const formatResult = {
-      flavour: {
-        avg: result[0].allShop[0].flavourAvg,
-        min: result[0].allShop[0].flavourMin,
-        max: result[0].allShop[0].flavourMax,
-        shopAvg: result[0].thisShop[0].avgFlavour
-      },
-      place: {
-        avg: result[0].allShop[0].placeAvg,
-        min: result[0].allShop[0].placeMin,
-        max: result[0].allShop[0].placeMax,
-        shopAvg: result[0].thisShop[0].avgPlace
-      },
-      service: {
-        avg: result[0].allShop[0].serviceAvg,
-        min: result[0].allShop[0].serviceMin,
-        max: result[0].allShop[0].serviceMax,
-        shopAvg: result[0].thisShop[0].avgService
-      },
-      parking: {
-        avg: result[0].allShop[0].parkingAvg,
-        min: result[0].allShop[0].parkingMin,
-        max: result[0].allShop[0].parkingMax,
-        shopAvg: result[0].thisShop[0].avgParking
-      },
-      worthiness: {
-        avg: result[0].allShop[0].worthinessAvg,
-        min: result[0].allShop[0].worthinessMin,
-        max: result[0].allShop[0].worthinessMax,
-        shopAvg: result[0].thisShop[0].avgWorthiness
-      },
-      totalScore: {
-        avg: result[0].allShop[0].totalScoreAvg,
-        min: result[0].allShop[0].totalScoreMin,
-        max: result[0].allShop[0].totalScoreMax,
-        shopAvg: result[0].thisShop[0].avgTotalScore
-      },
-      thisShopReviewNumber: result[0].thisShop[0].totalReview,
-      allShopreviewNumber: result[0].allShop[0].overallTotalReviews
+    let formattedResult
+    if ((result[0].allShop && result[0].allShop.length > 0)) {
+      formattedResult = {
+        status: 200,
+        data: {
+          flavour: {
+            avg: result[0].allShop[0].flavourAvg,
+            min: result[0].allShop[0].flavourMin,
+            max: result[0].allShop[0].flavourMax,
+            shopAvg: result[0].thisShop[0].avgFlavour
+          },
+          place: {
+            avg: result[0].allShop[0].placeAvg,
+            min: result[0].allShop[0].placeMin,
+            max: result[0].allShop[0].placeMax,
+            shopAvg: result[0].thisShop[0].avgPlace
+          },
+          service: {
+            avg: result[0].allShop[0].serviceAvg,
+            min: result[0].allShop[0].serviceMin,
+            max: result[0].allShop[0].serviceMax,
+            shopAvg: result[0].thisShop[0].avgService
+          },
+          parking: {
+            avg: result[0].allShop[0].parkingAvg,
+            min: result[0].allShop[0].parkingMin,
+            max: result[0].allShop[0].parkingMax,
+            shopAvg: result[0].thisShop[0].avgParking
+          },
+          worthiness: {
+            avg: result[0].allShop[0].worthinessAvg,
+            min: result[0].allShop[0].worthinessMin,
+            max: result[0].allShop[0].worthinessMax,
+            shopAvg: result[0].thisShop[0].avgWorthiness
+          },
+          totalScore: {
+            avg: result[0].allShop[0].totalScoreAvg,
+            min: result[0].allShop[0].totalScoreMin,
+            max: result[0].allShop[0].totalScoreMax,
+            shopAvg: result[0].thisShop[0].avgTotalScore
+          },
+        },
+        thisShopReviewCount: result[0].thisShop[0].totalReview,
+        allShopreviewCount: result[0].allShop[0].overallTotalReviews
+      }
+    } else {
+      formattedResult = {
+        status: 200,
+        data: {},
+        thisShopReviewCount: 0,
+        allShopreviewCount: 0
+      }
     }
-
-    res.status(200).json(formatResult)
+    res.status(200).json(formattedResult)
+    
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
@@ -402,5 +457,5 @@ module.exports = {
   getReachCountPerHours,
   getReachAge,
   getReviewScore,
-  getRevieweRank
+  getReviewRank
 }

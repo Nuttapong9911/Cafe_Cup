@@ -87,7 +87,9 @@ const router = express.Router()
  *   ReachCountOutput:
  *     type: object
  *     properties:
- *       result:
+ *       status:
+ *         type: number
+ *       data:
  *         type: array
  *         items:
  *           properties:
@@ -95,7 +97,7 @@ const router = express.Router()
  *               type: number
  *             count:
  *               type: number
- *       total:
+ *       totalCount:
  *         type: number
  * 
  *   ReviewScoreOutput:
@@ -441,8 +443,7 @@ router.get('/reach/get', reachController.get)
  *               schema:
  *                 $ref: '#/definitions/ReachCountOutput'
  *         400:
- *           description: error 
- *     
+ *           description: error
  */
 router.get('/analytic/reachCount', analyticController.getReachCountPerHours)
 
@@ -564,7 +565,7 @@ router.get('/analytic/reviewShopScore', analyticController.getReviewScore)
  *           description: error 
  *     
  */
-router.get('/analytic/reviewRank', analyticController.getRevieweRank)
+router.get('/analytic/reviewRank', analyticController.getReviewRank)
 
 // for test
 router.post('/reach/inserttest', reachController.createRandomReach)
