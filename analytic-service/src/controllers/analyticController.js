@@ -253,7 +253,7 @@ const getReviewScore = async (req, res) => {
           totalService: { $avg: '$service' },
           totalparking: { $avg: '$parking' },
           totalWorthiness: { $avg: '$worthiness' },
-          count: { $sum: 1 }
+          totalCount: { $sum: 1 }
         }
       }
     ])
@@ -449,7 +449,10 @@ const getReviewRank = async (req, res) => {
     
   } catch (error) {
     console.log(error)
-    res.status(400).json(error)
+    res.status(400).json({
+      staus: 400,
+      message: error.message
+    })
   }
 }
 

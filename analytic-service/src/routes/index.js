@@ -103,75 +103,87 @@ const router = express.Router()
  *   ReviewScoreOutput:
  *     type: object
  *     properties:
- *       totalFlavour:
+ *       status:
  *         type: number
- *       totalPlace:
- *         type: number
- *       totalService:
- *         type: number
- *       totalParking:
- *         type: number
- *       totalWorthiness:
- *         type: number
+ *       data:
+ *         type: object
+ *         properties:
+ *           totalFlavour:
+ *             type: number
+ *           totalPlace:
+ *             type: number
+ *           totalService:
+ *             type: number
+ *           totalParking:
+ *             type: number
+ *           totalWorthiness:
+ *             type: number
+ *           totalCount:
+ *             type: number
  * 
  *   ReviewRankOutput:
  *     type: object
  *     properties:
- *       flavour:
+ *       status:
+ *         type: number
+ *       data:
  *         type: object
- *         properties:
- *           avg:
- *             type: number
- *           min:
- *             type: number
- *           max:
- *             type: number
- *           shopAvg:
- *             type: number
- *       place:
- *         type: object
- *         properties:
- *           avg:
- *             type: number
- *           min:
- *             type: number
- *           max:
- *             type: number
- *           shopAvg:
- *             type: number
- *       service:
- *         type: object
- *         properties:
- *           avg:
- *             type: number
- *           min:
- *             type: number
- *           max:
- *             type: number
- *           shopAvg:
- *             type: number
- *       parking:
- *         type: object
- *         properties:
- *           avg:
- *             type: number
- *           min:
- *             type: number
- *           max:
- *             type: number
- *           shopAvg:
- *             type: number
- *       worthiness:
- *         type: object
- *         properties:
- *           avg:
- *             type: number
- *           min:
- *             type: number
- *           max:
- *             type: number
- *           shopAvg:
- *             type: number
+ *         properties: 
+ *           flavour:
+ *             type: object
+ *             properties:
+ *               avg:
+ *                 type: number
+ *               min:
+ *                 type: number
+ *               max:
+ *                 type: number
+ *               shopAvg:
+ *                 type: number
+ *           place:
+ *             type: object
+ *             properties:
+ *               avg:
+ *                 type: number
+ *               min:
+ *                 type: number
+ *               max:
+ *                 type: number
+ *               shopAvg:
+ *                 type: number
+ *           service:
+ *             type: object
+ *             properties:
+ *               avg:
+ *                 type: number
+ *               min:
+ *                 type: number
+ *               max:
+ *                 type: number
+ *               shopAvg:
+ *                 type: number
+ *           parking:
+ *             type: object
+ *             properties:
+ *               avg:
+ *                 type: number
+ *               min:
+ *                 type: number
+ *               max:
+ *                 type: number
+ *               shopAvg:
+ *                 type: number
+ *           worthiness:
+ *             type: object
+ *             properties:
+ *               avg:
+ *                 type: number
+ *               min:
+ *                 type: number
+ *               max:
+ *                 type: number
+ *               shopAvg:
+ *                 type: number
  *       thisShopReviewNumber:
  *         type: number
  *       allShopreviewNumber:
