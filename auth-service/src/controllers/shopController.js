@@ -101,14 +101,20 @@ const get = async (req,res) => {
     ])
 
     res.status(200).json({
-      shops: {
-        metadata: { totalCount: Result[0].metadata[0].totalCount, page, pageSize },
-        data: Result[0].data,
-      }
+      status: 200,
+      metadata: {
+        totalCount: (Result[0].metadata[0] && Result[0].metadata[0].totalCount) ? Result[0].metadata[0].totalCount : 0,
+        page,
+        pageSize 
+      },
+      data: Result[0] ? Result[0].data : []
     })
   } catch (error) {
     console.log(error)
-    res.status(400).json(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
   }
 }
 
