@@ -18,8 +18,8 @@ const router = express.Router()
  *         type: number
  *       _shopId:
  *         type: number
- *       _menuId:
- *         type: number
+ *       menuName:
+ *         type: string
  *       flavour:
  *         type: number
  *       place:
@@ -42,8 +42,8 @@ const router = express.Router()
  *         type: number
  *       _shopId:
  *         type: number
- *       _menuId:
- *         type: number
+ *       menuName:
+ *         type: string
  *       flavour:
  *         type: number
  *       place:

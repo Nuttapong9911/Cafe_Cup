@@ -90,7 +90,7 @@ const insertTest = async (req, res) => {
       const reviewInput = {
         _shopId,
         _customerId: Math.floor(Math.random() * users.data.length) + 1,
-        _menuId: 1,
+        menuName: 'menu 1',
         flavour: Math.floor(Math.random() * 5) + 1,
         place: Math.floor(Math.random() * 5) + 1,
         service: Math.floor(Math.random() * 5) + 1,
@@ -123,7 +123,7 @@ const insertHighReviewTest = async (req, res) => {
       const reviewInput = {
         _shopId,
         _customerId: Math.floor(Math.random() * users.data.length) + 1,
-        _menuId: 1,
+        menuName: 'menu 1',
         flavour: Math.floor(Math.random() * 2) + 4,
         place: Math.floor(Math.random() * 2) + 4,
         service: Math.floor(Math.random() * 2) + 4,
@@ -156,7 +156,7 @@ const insertLowReviewTest = async (req, res) => {
       const reviewInput = {
         _shopId,
         _customerId: Math.floor(Math.random() * users.data.length) + 1,
-        _menuId: 1,
+        menuName: 'menu 1',
         flavour: Math.floor(Math.random() * 2) + 1,
         place: Math.floor(Math.random() * 2) + 1,
         service: Math.floor(Math.random() * 2) + 1,
