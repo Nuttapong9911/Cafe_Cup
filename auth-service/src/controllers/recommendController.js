@@ -66,27 +66,21 @@ const calculateShop = async (req, res) => {
     userGroupTags[2] = { key: parseInt(trdTagString[0]), value: trdTagString[1] }
     tagCounts[trdIndex] = 0
 
-    // console.log(fstTagObj)
-    // console.log(sndTagObj)
-    // console.log(trdTagObj)
-
     // calculate score
     let scores = []
     const shops = await Shop.find()
     for (let i = 0; i < shops.length; i++) {
-      const score =  await calculateAllTag(shops[i], targetUser.tags, 0.6) + await calculateAllTag(shops[i], userGroupTags, 0.4)
+      const score =  await calculateAllTag(shops[i], targetUser.tags, 60/6) + await calculateAllTag(shops[i], userGroupTags, 40/6)
       scores[i] = { _shopID: shops[i]._id, score }
     }
     scores.sort((a,b) => b.score - a.score)
 
-    res.status(200).json(scores)
+    res.status(200).json(scores.slice(0,10))
 
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
   }
-
-  
 }
 
 // calculating functions
@@ -144,12 +138,10 @@ const calculateTag = async (shop, tag) => {
       else if (tag.value === 'TAKEAWAY') return shop.consumerGroup === 'TAKEAWAY'
       else return false
 
- 
     default:
       return false
   }
 }
-
 
 module.exports = {
   calculateShop

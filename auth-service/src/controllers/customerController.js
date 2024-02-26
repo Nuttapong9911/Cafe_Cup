@@ -5,6 +5,7 @@ const Customer = require('../models/customer')
 const getRandomInt = require('../common/randomInt')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 const { subDistrictList } = require('../constants/shop')
+const { occupations } = require('../constants/customer')
 
 const getById = async (req, res) => {
   try {
@@ -81,8 +82,14 @@ const update = async (req, res) => {
         throw ({name: 'ParameterError', message: 'This username is already used.'}) 
     }
 
-    // [ ] needs authen before do this 
     if (userInputs.password) userInputs.password = await bcrypt.hash(req.body.password, 10)
+
+    if (userInputs.tags && !(await validateTags(userInputs.tags)))    
+      throw ({name: 'UserInputError', message: 'Tags input incorrect'})
+    
+    if (userInputs.gender || userInputs.age || userInputs.occupation) {
+      userInputs._clusterId = await KNearestNeighbor(userInputs)
+    }
 
     let result = await Customer.findOneAndUpdate(req.query, userInputs, {new: true})
     result.password = undefined
@@ -111,7 +118,7 @@ const deleteByID = async (req, res) => {
 
 // for test
 const randCreateCustomer = async (req, res) => {
-  const amount = 10
+  const amount = 25
   try {
     for (let i = 1; i <= amount; i++) {
       let body = {
@@ -121,7 +128,8 @@ const randCreateCustomer = async (req, res) => {
         gender: getRandomInt(1,2) === 1 ? 'MALE' : 'FEMALE',
         age: 'UNDER_22', 
         occupation: 'Student',
-        tags: randomTags(1)
+        tags: randomTags(1),
+        _clusterId: 1
       }
       await createCustomer(body)
     }
@@ -131,8 +139,10 @@ const randCreateCustomer = async (req, res) => {
         password: `password`,
         name: `TOURIST $P{i}`,
         gender: getRandomInt(1,10) <= 2 ? 'MALE' : 'FEMALE',
-        age: getRandomInt(1,2) === 1 ? 'UNDER_22' : '23_TO_40',
-        tags: randomTags(2)
+        age: '23_TO_40',
+        occupation: 'Tourist',
+        tags: randomTags(2),
+        _clusterId: 2
       }
       await createCustomer(body)
     }
@@ -143,7 +153,9 @@ const randCreateCustomer = async (req, res) => {
         name: `OFFICE_WORKIER ${i}`,
         gender: getRandomInt(1,2) === 1 ? 'MALE': 'FEMALE',
         age: getRandomInt(1,10) <= 7 ? '23_TO_40': '41_TO_60',
-        tags: randomTags(3)
+        occupation: 'Employee (Staff) in a company',
+        tags: randomTags(3),
+        _clusterId: 3
       }
       await createCustomer(body)
     }
@@ -154,7 +166,9 @@ const randCreateCustomer = async (req, res) => {
         name: `TAKEAWAY ${i}`,
         gender: getRandomInt(1,2) === 1 ? 'MALE': 'FEMALE',
         age: getRandomInt(1,10) <= 4 ? '41_TO_60': 'AFTER_61',
-        tags: randomTags(4)
+        occupation: occupations[getRandomInt(0, occupations.length)],
+        tags: randomTags(4),
+        _clusterId: 4
       }
       await createCustomer(body)
     }
@@ -173,6 +187,8 @@ const createCustomer = async (body) => {
     throw ({name: 'ParameterError', message: 'This username is already used.'}) 
   }
 
+  if (body.tags && !(await validateTags(body.tags))) throw ({name: 'UserInputError', message: 'Tags input incorrect'}) 
+
   const highestUserId = await Customer.findOne({}).sort({_id: -1}).exec();
   let userInputs = {
     _id: highestUserId ? highestUserId._id + 1 : 1,
@@ -180,10 +196,79 @@ const createCustomer = async (body) => {
     password: await bcrypt.hash(body.password, 10),
   }
 
+  if (userInputs.tags && !userInputs._clusterId){
+    userInputs._clusterId = await KNearestNeighbor(userInputs)
+  }
+
+  // [ ] transaction ?
   let result = await Customer.create(userInputs)
   result.password = undefined
 
   return result
+}
+
+const KNearestNeighbor = async (newUser) => {
+  const clusteredUsers = await Customer.find({ '_clusterId': { $ne: null } })
+  let similarities = []
+  for (let clusterUser of clusteredUsers) {
+    let matchs = 0
+    if (clusterUser.gender === newUser.gender)
+      matchs += 1
+    if (clusterUser.age === newUser.age)
+      matchs += 1
+    if (clusterUser.occupation === newUser.occupation)
+      matchs += 1
+    similarities.push({
+      _id: clusterUser._id,
+      similarity: matchs/3,
+      _clusterId: clusterUser._clusterId
+    })
+  }
+  similarities.sort((a,b) => b.similarity - a.similarity)
+
+  let clusterCount = [0,0,0,0]
+  let mostSim = similarities[0].similarity
+  clusterCount[similarities[0]._clusterId - 1] += 1
+  for (let i = 1; i < similarities.length; i++) {
+    if(mostSim === similarities[i].similarity){
+      clusterCount[similarities[i]._clusterId - 1] += 1
+    } else {
+      break
+    }
+  }
+
+  console.log(similarities)
+  console.log(clusterCount)
+  return clusterCount.indexOf(Math.max(...clusterCount)) + 1
+}
+
+const validateTags = async (tags) =>{
+  if (tags.length < 3) return false
+  for (let tag of tags) {
+    switch (tag.key) {
+      case 1:
+        if (!subDistrictList.includes(tag.value)) return false
+        break;
+      case 2:
+        if (!['CHEAP', 'MEDIUM', 'HIGH'].includes(tag.value)) return false
+        break;
+      case 3:
+        if (!['EARLYMORNING', 'MORNING', 'AFTERNOON', 'EVENING', 'NIGHT'].includes(tag.value)) return false
+        break;
+      case 4:
+        if (!['SMALL', 'LARGE'].includes(tag.value)) return false
+        break;
+      case 5:
+        if (!['QUITE', 'NORMAL'].includes(tag.value)) return false
+        break;
+      case 6:
+        if (!['STUDENT', 'OFFICE_WORKER', 'TOURIST', 'DIGITAL_NORMAD', 'TAKEAWAY'].includes(tag.value)) return false
+        break;                        
+      default:
+        break;
+    }
+  }
+  return true
 }
 
 const randomTag = (key, tagArr) =>{
@@ -226,7 +311,7 @@ const randomTags = (_groupId) => {
             tags.push(randomTag(key, ['สุเทพ', 'ช้างม่อย']))
             break;
           case 2:
-            tags.push(randomTag(key, ['CHEAP', 'NORMAL', 'HIGH']))
+            tags.push(randomTag(key, ['CHEAP', 'MEDIUM', 'HIGH']))
             break;
           case 3:
             tags.push(randomTag(key, ['MORNING', 'AFTERNOON']))
@@ -248,7 +333,7 @@ const randomTags = (_groupId) => {
             tags.push(randomTag(key, ['สุเทพ']))
             break;
           case 2:
-            tags.push(randomTag(key, ['NORMAL', 'HIGH']))
+            tags.push(randomTag(key, ['MEDIUM', 'HIGH']))
             break;
           case 3:
             tags.push(randomTag(key, ['AFTERNOON', 'EVENING']))

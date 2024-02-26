@@ -16,7 +16,8 @@ const customerSchema = new mongoose.Schema({
   age: { type: String, enum: [ 'UNDER_22', '23_TO_40', '41_TO_60', 'AFTER_61' ] },
   occupation: { type: String },
   favourites: [_shopID],
-  tags: [tag]
+  tags: [tag],
+  _clusterId: { type: Number, enum: [ 1, 2, 3, 4 ] }
 }, {
   versionKey: false
 })
