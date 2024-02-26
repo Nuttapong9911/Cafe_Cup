@@ -17,7 +17,8 @@ const customerSchema = new mongoose.Schema({
   occupation: { type: String },
   favourites: [_shopID],
   tags: [tag],
-  _clusterId: { type: Number, enum: [ 1, 2, 3, 4 ] }
+  _clusterId: { type: Number, enum: [ 1, 2, 3, 4 ] },
+  reviewPoints: { type: Number, default: 0 }
 }, {
   versionKey: false
 })

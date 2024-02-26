@@ -1,4 +1,4 @@
-const { default: axios } = require('axios')
+const axios = require('axios')
 const Review = require('../models/review')
 const genDate = require('../common/genDate')
 
@@ -32,6 +32,15 @@ const create = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
 
+    // review gain +1 point
+    await axios.put(`http://auth-node:3002/customer/editReviewPoints`,
+      {},
+      { 
+        params: { _id: parseInt(req.body._customerId, 10), points: 1 },
+        headers: { 'token': 'skip' }
+      },
+    )
+    
     res.status(200).json(await createReview({ ...req.body, timestamp: new Date()}))
   } catch (error) {
     console.log(error)

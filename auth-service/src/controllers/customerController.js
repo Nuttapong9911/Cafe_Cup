@@ -115,6 +115,66 @@ const deleteByID = async (req, res) => {
   }
 }
 
+const getReviewPoints = async (req, res) => {
+  try {
+    const { _id } = req.query
+    if (!_id) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
+
+    const user = await Customer.findOne({ _id })
+    if (!user) throw ({name: 'ParameterError', message: 'User not found.'}) 
+
+    res.status(200).json({
+      status: 200,
+      data: {
+        _id: user._id,
+        reviewPoints: user.reviewPoints ? user.reviewPoints : 0
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
+  }
+}
+
+const editReviewPoints = async (req, res) => {
+  try {
+    const { _id, points } = req.query
+    if (!(_id && points)) {
+      throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    }
+
+    const user = await Customer.findOne({ _id })
+    if (!user) throw ({name: 'ParameterError', message: 'User not found.'})
+
+    let newPoints = user.reviewPoints + parseInt(points, 10)
+    if (newPoints < 0) newPoints = 0
+    if (newPoints > 10) newPoints = 10
+    result = await Customer.findOneAndUpdate(
+      { _id: parseInt(_id, 10) },
+      { reviewPoints: newPoints },
+      { new: true }
+    )
+
+    res.status(200).json({
+      status: 200,
+      data: {
+        _id: result._id,
+        reviewPoints: result.reviewPoints
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
+  }
+}
 
 // for test
 const randCreateCustomer = async (req, res) => {
@@ -385,5 +445,8 @@ module.exports = {
   login,
   update,
   deleteByID,
+  getReviewPoints,
+  editReviewPoints,
+
   randCreateCustomer
 }

@@ -498,6 +498,19 @@ const router = express.Router()
  *     properties:
  *       token:
  *         type: string 
+ * 
+ *   ReviewPointsOutput:
+ *     type: object
+ *     properties:
+ *       status:
+ *         type: number
+ *       data:
+ *         type: object
+ *         properties:
+ *           _id:
+ *             type: number
+ *           reviewPoints:
+ *             type: number
  */
 
 // [ ] task: healthcheck
@@ -844,6 +857,60 @@ router.delete('/customer/delete', customerController.deleteByID)
  *           description: error occurs
  */
 router.get('/customer/recommend', middlewareAuth, recommendController.calculateShop)
+
+/**
+ * @swagger
+ * paths:
+ *   /customer/getReviewPoints:
+ *     get:
+ *       summary: get review points
+ *       parameters:
+ *         - in: query
+ *           name: _id
+ *           type: number
+ *           required: true
+ *       responses:
+ *         200:
+ *           description: return _id with reviewPoints
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewPointsOutput'
+ *         400:
+ *           description: error occurs
+ */
+router.get('/customer/getReviewPoints', customerController.getReviewPoints)
+
+/**
+ * @swagger
+ * paths:
+ *   /customer/editReviewPoints:
+ *     put:
+ *       summary: edit review points
+ *       parameters:
+ *         - in: query
+ *           name: _id
+ *           type: number
+ *           required: true
+ *         - in: query
+ *           name: points
+ *           type: number
+ *           required: true
+ *         - in: header
+ *           name: token
+ *           type: string
+ *           required: true
+ *       responses:
+ *         200:
+ *           description: return _id with reviewPoints
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/definitions/ReviewPointsOutput'
+ *         400:
+ *           description: error occurs
+ */
+router.put('/customer/editReviewPoints', middlewareAuth, customerController.editReviewPoints)
 
 /**
  * @swagger
