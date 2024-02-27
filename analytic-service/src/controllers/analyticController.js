@@ -6,7 +6,7 @@ const Review = require('../models/review')
 const validateToken = async (token, _id) => {
   let validatedResult
   try {
-    validatedResult = await axios.get(`http://auth-node:3002/validateToken`,
+    validatedResult = await axios.get(`http://auth-node:3002/validateTokenAuthService`,
     {
       params: { _id: parseInt(_id, 10) },
       headers:

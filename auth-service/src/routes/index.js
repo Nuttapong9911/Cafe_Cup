@@ -1,9 +1,13 @@
 const express = require('express')
+const jwt = require('jsonwebtoken')
 
 const shopController = require('../controllers/shopController')
 const customerController = require('../controllers/customerController')
 const recommendController = require('../controllers/recommendController')
 const middlewareAuth = require('../middleware/auth')
+const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
+const Customer = require('../models/customer')
+const Shop = require('../models/shop')
 
 const router = express.Router()
 
@@ -929,8 +933,50 @@ router.put('/customer/editReviewPoints', middlewareAuth, customerController.edit
  *         400:
  *           description: error
  */
-router.get('/validateToken', middlewareAuth, (req, res) => res.status(200).json({status: 'ok'}))
+router.get('/validateTokenAuthService', middlewareAuth, (req, res) => res.status(200).json({status: 'ok'}))
 
+router.get('/validateToken', async (req, res) => {
+  try {
+    // [ ] now we still have one danger hole
+    // ถ้า user นำ token ไปยิงใส่ route ของอีก role ด้วย _id เดียวกัน
+    // e.g., customer _id 101 นำ token ตัวเอง ไปยิงใส่ route ของ shop ด้วย _id 101 
+    // action ของ route นัั้นจะสำเร็จ (ถ้า data ถูกต้อง)
+
+    const { token } = req.headers
+    if (!token) throw({name: 'userValidateError', message: 'token not found'})
+
+    
+    // [ ] flag skip for dev
+    
+    if (token === 'skip'){
+      res.status(200).json({status: 'ok'})
+      return
+    }
+
+    const decodedToken = jwt.verify(token, JWT_LOGIN_KEY)
+
+    // validate token's fields
+    if (!(decodedToken && decodedToken.role && decodedToken._id))
+      throw({name: 'userValidateError', message: 'invalid token'})
+
+    const _tokenId = parseInt(decodedToken._id, 10)
+
+    // validate role
+    if (decodedToken.role === 'customer' && (await Customer.findOne({ _id: _tokenId }))) {
+      res.status(200).json({status: 'ok', data: { _id: decodedToken._id, role: decodedToken.role }})
+      return
+    }
+    else if (decodedToken.role === 'shop' && (await Shop.findOne({ _id: _tokenId }))) {
+      res.status(200).json({status: 'ok', data: { _id: decodedToken._id, role: decodedToken.role }})
+      return
+    }
+    else
+      throw({name: 'userValidateError', message: 'invalid token'})
+  } catch (error) {
+    console.log(error)
+    res.status(400).json(error)
+  }
+})
 // for dev
 
 router.post('/customer/inserttest', customerController.randCreateCustomer)
