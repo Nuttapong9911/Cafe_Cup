@@ -9,12 +9,10 @@ const calculateShop = async (req, res) => {
     }
     const targetUser = await Customer.findOne(req.query)
     if(!targetUser) throw ({name: 'ParameterError', message: 'User not found'}) 
-    
+
     // find user group
     const userGroups = await Customer.find({
-      gender: targetUser.gender,
-      age: targetUser.age,
-      occupation: targetUser.occupation
+      _clusterId: targetUser._clusterId
     })
     if (userGroups.length === 0) res.status(200).json([])
 
