@@ -260,7 +260,7 @@ const getReviewScore = async (req, res) => {
 
     const formattedResult = {
       status: 200,
-      data: result.length > 0 ? result[0] : [],
+      data: result,
     }
 
     res.status(200).json(formattedResult)
