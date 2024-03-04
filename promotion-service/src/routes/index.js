@@ -315,10 +315,6 @@ router.put('/promo/customerClaimCode', promotionController.customerClaimCode)
  *       summary:
  *       parameters:
  *         - in: query
- *           name: _customerId
- *           type: number
- *           required: true
- *         - in: query
  *           name: codeString
  *           type: string
  *           required: true

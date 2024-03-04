@@ -136,12 +136,11 @@ const customerClaimCode = async (req, res) => {
 
 const customerActivatedCode = async (req, res) => {
   try {
-    const { _customerId, codeString } = req.query
-    if (!(_customerId && codeString)) throw ({name: 'ParameterError', message: 'Missing required input'}) 
+    const { codeString } = req.query
+    if (!(codeString)) throw ({name: 'ParameterError', message: 'Missing required input'}) 
 
     const claimedCode = await Promotion.findOne({
       status: 'CLAIMED',
-      _customerId,
       codeString
     })
     if (!claimedCode) throw ({name: 'PromotionError', message: 'Code not found'}) 
