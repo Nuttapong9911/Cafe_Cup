@@ -250,6 +250,13 @@ const createCustomer = async (body) => {
   if (body.tags && !(await validateTags(body.tags))) throw ({name: 'UserInputError', message: 'Tags input incorrect'}) 
 
   const highestUserId = await Customer.findOne({}).sort({_id: -1}).exec();
+  
+  // [ ] for test
+  console.log('highestUserId')
+  console.log(`_id: ${highestUserId._id}, username: ${highestUserId.username}`)
+
+  if (highestUserId && !highestUserId._id) throw ({name: 'CreateAccountError', message: 'Found user without _id'}) 
+
   let userInputs = {
     _id: highestUserId ? highestUserId._id + 1 : 1,
     ...body,
@@ -259,6 +266,9 @@ const createCustomer = async (body) => {
   if (userInputs.tags && !userInputs._clusterId){
     userInputs._clusterId = await KNearestNeighbor(userInputs)
   }
+
+  console.log('userInputs')
+  console.log(userInputs)
 
   // [ ] transaction ?
   let result = await Customer.create(userInputs)
@@ -297,8 +307,8 @@ const KNearestNeighbor = async (newUser) => {
     }
   }
 
-  console.log(similarities)
-  console.log(clusterCount)
+  // console.log(similarities)
+  // console.log(clusterCount)
   return clusterCount.indexOf(Math.max(...clusterCount)) + 1
 }
 
