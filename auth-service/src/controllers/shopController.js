@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const Shop = require('../models/shop')
 const getRandomInt = require('../common/randomInt')
-const { subDistrictList } = require('../constants/shop')
+const { subDistrictList, cafeNames } = require('../constants/shop')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req,res) => {
@@ -243,7 +243,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
       const body = {
         username: `user-g1-rcmd-${i}`,
         password: `password`,
-        name: `shop-for-STUDENT-${i}`,
+        name: cafeNames[getRandomInt(0,cafeNames.length)],
         address: {
           subDistrict: 'สุเทพ'
         },
@@ -287,7 +287,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
       const body = {
         username: `user-g2-rcmd-${i}`,
         password: `password`,
-        name: `shop-for-TOURISTS-${i}`,
+        name: cafeNames[getRandomInt(0,cafeNames.length)],
         address: {
           subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'ช้างม่อย',
         },
@@ -351,7 +351,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
       const body = {
         username: `user-g3-rcmd-${i}`,
         password: `password`,
-        name: `shop-for-OFFICE-${i}`,
+        name: cafeNames[getRandomInt(0,cafeNames.length)],
         address: {
           subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'แม่เหียะ',
         },
@@ -415,7 +415,7 @@ const insertTestForRcmdAlgo = async (req, res) => {
       const body = {
         username: `user-g4-rcmd-${i}`,
         password: `password`,
-        name: `shop-for-SECRET_SHOP-${i}`,
+        name: cafeNames[getRandomInt(0,cafeNames.length)],
         address: {
           subDistrict: subDistrictList[getRandomInt(0, 16)],
         },
