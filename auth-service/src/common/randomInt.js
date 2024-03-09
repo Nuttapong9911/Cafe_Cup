@@ -1,5 +1,5 @@
 /**
- * random int fucntion
+ * random int function
  * @param {*} start min
  * @param {*} range range of random start from start param
  * @returns a random integer
