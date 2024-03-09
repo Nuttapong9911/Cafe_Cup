@@ -1,3 +1,5 @@
+const getRandomInt = require('../common/randomInt')
+
 module.exports = {
   subDistrictList: [
     'ศรีภูมิ',
@@ -17,7 +19,6 @@ module.exports = {
     'ป่าตัน',
     'สันผีเสื้อ',
   ],
-
   cafeNames: [
     "บ้านกาแฟ", 
     "มุมกาแฟ", 
@@ -194,4 +195,29 @@ module.exports = {
     "Coffee Drip",
     "Java Drip"
   ],
+  coffeeShopDescriptions: (name) => {
+    const descriptions = [
+      `Welcome to ${name}, where every cup tells a story. Enjoy freshly brewed coffee in a cozy atmosphere perfect for catching up with friends or diving into a good book.`,
+      `At ${name}, we're passionate about serving the perfect cup of joe. Whether you're in need of a morning boost or a midday pick-me-up, we've got you covered with our selection of premium coffees.`,
+      `Step into ${name} and let the aroma of freshly ground beans awaken your senses. With comfortable seating and friendly service, it's the ideal spot to relax and recharge.`,
+      `${name} is your neighborhood coffee destination, where quality meets convenience. Swing by for a quick caffeine fix or stay awhile and soak in the laid-back vibe.`,
+      `${name} offers a warm and inviting atmosphere paired with delicious coffee crafted with care. Join us for a cup of comfort and a moment of tranquility.`,
+      `${name} is where coffee dreams come true. From velvety lattes to rich espressos, each sip is a journey of flavor crafted just for you.`,
+      `${name} is more than just a coffee shop it's a community hub where locals gather to connect over their love of great coffee and good conversation.`,
+      `${name}is the perfect blend of simplicity and sophistication. Indulge in our handcrafted beverages while basking in the relaxed ambiance at ${name}.`,
+      `${name} is your cozy corner of caffeine heaven. Whether you're flying solo or meeting up with friends, you'll always feel at home here at ${name}.`,
+      `${name} is where passion meets perfection. With a commitment to quality and a dedication to delighting our customers, every cup is crafted with love at ${name}.`
+    ]
+    return descriptions[getRandomInt(0, descriptions.length)]
+  },
+  sampleCoverImages: [
+    'https://media-cdn.tripadvisor.com/media/photo-s/1b/3f/c1/f1/kj-coffee-shop-es-un.jpg',
+    'https://sumatocoffee.com/cdn/shop/articles/coffee_3839f67b-f767-4937-baac-bf300773bdac_900x.jpg?v=1677124219',
+    'https://www.barniescoffee.com/cdn/shop/articles/bar-1869656_1920.jpg?v=1660683986',
+    'https://i.pinimg.com/originals/36/66/a4/3666a417a3a5078c5ef5c7672bc13433.jpg',
+    'https://media-cdn.tripadvisor.com/media/photo-s/1a/2b/ea/41/photo0jpg.jpg',
+    'https://images.edrawmax.com/article2023/coffee-shop-org-chart/organizational-structure-of-coffee-shop.jpg',
+    'https://www.posist.com/restaurant-times/wp-content/uploads/2023/07/How-To-Start-A-Coffee-Shop-Business-A-Complete-Guide.jpg'
+  ]
+
 }

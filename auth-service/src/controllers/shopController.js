@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const Shop = require('../models/shop')
 const getRandomInt = require('../common/randomInt')
-const { subDistrictList, cafeNames } = require('../constants/shop')
+const { subDistrictList, cafeNames, coffeeShopDescriptions, sampleCoverImages } = require('../constants/shop')
 const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req,res) => {
@@ -240,30 +240,36 @@ const insertTestForRcmdAlgo = async (req, res) => {
   try {
     // shop group STUDENT
     for (let i = 1; i <= 20; i++) {
+      const shopName = cafeNames[getRandomInt(0,cafeNames.length)]
       const body = {
         username: `user-g1-rcmd-${i}`,
         password: `password`,
-        name: cafeNames[getRandomInt(0,cafeNames.length)],
+        name: shopName,
+        description: coffeeShopDescriptions(shopName),
         address: {
-          subDistrict: 'สุเทพ'
+          country: 'ไทย',
+          province: 'เชียงใหม่',
+          district: 'เมืองเชียงใหม่',
+          subDistrict: 'สุเทพ',
         },
         menus: [
           {
-          name: 'menu 1',
+          name: 'Espresso',
           category: 'drinks',
           price: 40
           },
           {
-            name: 'menu 2',
+            name: 'Latte',
             category: 'drinks',
             price: 45
           },
           {
-            name: 'menu 3',
+            name: 'Cappuccino',
             category: 'drinks',
             price: 50
           },
         ],
+        coverImage: sampleCoverImages[getRandomInt(0, sampleCoverImages.length)],
         daysOpen: randDay(i),
         timeOpen: '08:00',
         timeClose: getRandomInt(1, 2) === 1 ? '19:00': '20:30',
@@ -284,28 +290,33 @@ const insertTestForRcmdAlgo = async (req, res) => {
 
     // shop group TOURISTS
     for (let i = 1; i <= 20; i++) {
+      const shopName = cafeNames[getRandomInt(0,cafeNames.length)]
       const body = {
         username: `user-g2-rcmd-${i}`,
         password: `password`,
-        name: cafeNames[getRandomInt(0,cafeNames.length)],
+        name: shopName,
+        description: coffeeShopDescriptions(shopName),
         address: {
+          country: 'ไทย',
+          province: 'เชียงใหม่',
+          district: 'เมืองเชียงใหม่',
           subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'ช้างม่อย',
         },
         menus: 
         getRandomInt(1,2) === 1 ?
         [
           {
-          name: 'menu 1',
+          name: 'Espresso',
           category: 'drinks',
           price: 60
           },
           {
-            name: 'menu 2',
+            name: 'Americano',
             category: 'drinks',
             price: 65
           },
           {
-            name: 'menu 3',
+            name: 'Flat White',
             category: 'drinks',
             price: 70
           },
@@ -313,21 +324,22 @@ const insertTestForRcmdAlgo = async (req, res) => {
         :
         [
           {
-          name: 'menu 1',
+          name: 'Americano',
           category: 'drinks',
           price: 90
           },
           {
-            name: 'menu 2',
+            name: 'Mocha',
             category: 'drinks',
             price: 100
           },
           {
-            name: 'menu 3',
+            name: 'Cappuccino',
             category: 'drinks',
             price: 110
           },
         ],
+        coverImage: sampleCoverImages[getRandomInt(0, sampleCoverImages.length)],
         daysOpen: randDay(i),
         timeOpen: getRandomInt(1, 2) === 1 ? '08:00': '13:00',
         timeClose: '19:00',
@@ -348,28 +360,33 @@ const insertTestForRcmdAlgo = async (req, res) => {
 
     // shop group OFFICE
     for (let i = 1; i <= 20; i++) {
+      const shopName = cafeNames[getRandomInt(0,cafeNames.length)]
       const body = {
         username: `user-g3-rcmd-${i}`,
         password: `password`,
-        name: cafeNames[getRandomInt(0,cafeNames.length)],
+        name: shopName,
+        description: coffeeShopDescriptions(shopName),
         address: {
+          country: 'ไทย',
+          province: 'เชียงใหม่',
+          district: 'เมืองเชียงใหม่',
           subDistrict: getRandomInt(1, 2) === 1 ? 'สุเทพ' : 'แม่เหียะ',
         },
         menus: 
         getRandomInt(1,2) === 1 ?
         [
           {
-          name: 'menu 1',
+          name: 'Espresso',
           category: 'drinks',
           price: 60
           },
           {
-            name: 'menu 2',
+            name: 'Cappucino',
             category: 'drinks',
             price: 65
           },
           {
-            name: 'menu 3',
+            name: 'Latte',
             category: 'drinks',
             price: 70
           },
@@ -377,21 +394,22 @@ const insertTestForRcmdAlgo = async (req, res) => {
         :
         [
           {
-          name: 'menu 1',
+          name: 'Americano',
           category: 'drinks',
           price: 90
           },
           {
-            name: 'menu 2',
+            name: 'Espresso',
             category: 'drinks',
             price: 100
           },
           {
-            name: 'menu 3',
+            name: 'Mocha',
             category: 'drinks',
             price: 110
           },
         ],
+        coverImage: sampleCoverImages[getRandomInt(0, sampleCoverImages.length)],
         daysOpen: randDay(i),
         timeOpen: '08:00',
         timeClose: '19:00',
@@ -412,31 +430,37 @@ const insertTestForRcmdAlgo = async (req, res) => {
 
     // shop group SECRET_SHOP
     for (let i = 1; i <= 20; i++) {
+      const shopName = cafeNames[getRandomInt(0,cafeNames.length)]
       const body = {
         username: `user-g4-rcmd-${i}`,
         password: `password`,
-        name: cafeNames[getRandomInt(0,cafeNames.length)],
+        name: shopName,
+        description: await coffeeShopDescriptions(shopName),
         address: {
+          country: 'ไทย',
+          province: 'เชียงใหม่',
+          district: 'เมืองเชียงใหม่',
           subDistrict: subDistrictList[getRandomInt(0, 16)],
         },
         menus: 
         [
           {
-          name: 'menu 1',
+          name: 'Espresso',
           category: 'drinks',
           price: 90
           },
           {
-            name: 'menu 2',
+            name: 'Orange Coffee',
             category: 'drinks',
             price: 100
           },
           {
-            name: 'menu 3',
+            name: 'Mocha',
             category: 'drinks',
             price: 110
           },
         ],
+        coverImage: sampleCoverImages[getRandomInt(0, sampleCoverImages.length)],
         daysOpen: randDay(i),
         timeOpen: '05:00',
         timeClose: '18:00',
