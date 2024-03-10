@@ -455,6 +455,15 @@ const router = express.Router()
  *                type: number
  *              value:
  *                type: string
+ *       _clusterId:
+ *         type: number
+ *       reviewPoints:
+ *         type: number
+ *       canClaimCode:
+ *         type: boolean
+ *       lastClaim:
+ *         type: string
+ *         format: date-time
  * 
  *   CustomerWithToken:
  *     type: object
@@ -494,6 +503,15 @@ const router = express.Router()
  *                    type: string
  *       token:
  *         type: string 
+ *       _clusterId:
+ *         type: number
+ *       reviewPoints:
+ *         type: number
+ *       canClaimCode:
+ *         type: boolean
+ *       lastClaim:
+ *         type: string
+ *         format: date-time
  * 
  *   Token:
  *     type: object
@@ -514,6 +532,13 @@ const router = express.Router()
  *           _id:
  *             type: number
  *           reviewPoints:
+ *             type: number
+ *           canClaimCode:
+ *             type: boolean
+ *           lastClaim:
+ *             type: string
+ *             format: date-time
+ *           daysToRefresh:
  *             type: number
  */
 
