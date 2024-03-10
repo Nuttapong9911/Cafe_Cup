@@ -125,11 +125,36 @@ const getReviewPoints = async (req, res) => {
     const user = await Customer.findOne({ _id })
     if (!user) throw ({name: 'ParameterError', message: 'User not found.'}) 
 
+    let userClaimStatus = user.canClaimCode
+    let daysToRefresh = 0
+    if ( !user.canClaimCode ){
+      if (!user.lastClaim) throw ({name: 'UserError', message: 'Already use quota but not found lastClaim date'}) 
+      let lastSunday = new Date()
+      lastSunday.setHours(0,0,0,0)
+      lastSunday.setDate(lastSunday.getDate() - lastSunday.getDay())
+
+      // case Customer claimed before last sunday
+      // so it will refresh the quota for this week
+      if( user.lastClaim < lastSunday ){
+        const { canClaimCode } = await Customer.findOneAndUpdate({ _id: user._id }, { canClaimCode: true }, { new: true })
+        userClaimStatus = canClaimCode
+      }
+
+      // case Customer already claimed in this week
+      // calcualte days lefts to next refresh the quota(sunday)
+      else {
+        daysToRefresh = 7 - (new Date()).getDay()
+      }  
+    }
+
     res.status(200).json({
       status: 200,
       data: {
         _id: user._id,
-        reviewPoints: user.reviewPoints ? user.reviewPoints : 0
+        reviewPoints: user.reviewPoints ? user.reviewPoints : 0,
+        canClaimCode: userClaimStatus,
+        lastClaim: user.lastClaim,
+        daysToRefresh
       }
     })
   } catch (error) {
@@ -144,6 +169,7 @@ const getReviewPoints = async (req, res) => {
 const editReviewPoints = async (req, res) => {
   try {
     const { _id, points } = req.query
+
     if (!(_id && points)) {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
@@ -151,12 +177,22 @@ const editReviewPoints = async (req, res) => {
     const user = await Customer.findOne({ _id })
     if (!user) throw ({name: 'ParameterError', message: 'User not found.'})
 
+    // ปรับ reviewPoints ให้อยู่ใน range 0 ถึง 10
     let newPoints = user.reviewPoints + parseInt(points, 10)
     if (newPoints < 0) newPoints = 0
     if (newPoints > 10) newPoints = 10
+
+    //case claimCode; set quota to 0 and stamp lastClaim
+    let updateInput =
+    {
+      reviewPoints: newPoints,
+      ...((parseInt(points, 10) < 0 && newPoints === 0) && { canClaimCode: false }),
+      ...((parseInt(points, 10) < 0 && newPoints === 0) && { lastClaim: (new Date()) }),
+    }
+
     result = await Customer.findOneAndUpdate(
       { _id: parseInt(_id, 10) },
-      { reviewPoints: newPoints },
+      updateInput,
       { new: true }
     )
 
@@ -164,7 +200,9 @@ const editReviewPoints = async (req, res) => {
       status: 200,
       data: {
         _id: result._id,
-        reviewPoints: result.reviewPoints
+        reviewPoints: result.reviewPoints,
+        canClaimCode: result.canClaimCode,
+        lastClaim: result.lastClaim
       }
     })
   } catch (error) {
