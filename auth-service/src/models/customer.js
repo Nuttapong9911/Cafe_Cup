@@ -18,7 +18,9 @@ const customerSchema = new mongoose.Schema({
   favourites: [_shopID],
   tags: [tag],
   _clusterId: { type: Number, enum: [ 1, 2, 3, 4 ] },
-  reviewPoints: { type: Number, default: 0 }
+  reviewPoints: { type: Number, default: 0 },
+  lastClaim: { type: Date },
+  canClaimCode: { type: Boolean, default: true }
 }, {
   versionKey: false
 })

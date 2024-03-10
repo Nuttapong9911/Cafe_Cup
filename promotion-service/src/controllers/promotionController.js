@@ -109,12 +109,31 @@ const customerClaimCode = async (req, res) => {
 
     await validateCodes(_customerId)
 
+    const userReviewData = await axios.get(`http://auth-node:3002/customer/getReviewPoints`,
+      { 
+        params: { _id: parseInt(_customerId, 10) },
+        headers: { 'token': 'skip' }
+      },
+    )
+
+    // console.log(userReviewData)
+    if (!userReviewData.data.data.canClaimCode || userReviewData.data.data.reviewPoints < 10)
+      throw ({name: 'CustomerClaimCodeError', message: 'Not enough reviewPoints or quota per week'}) 
+
     const availableCodes = await Promotion.find({
       status: 'AVAILABLE'
     })
 
     if(availableCodes && availableCodes.length > 0) {
       const idx = randomInt(0, availableCodes.length-1)
+
+      await axios.put(`http://auth-node:3002/customer/editReviewPoints`,
+        {},
+        { 
+          params: { _id: parseInt(_customerId, 10), points: -10 },
+          headers: { 'token': 'skip' }
+        },
+      )
 
       const claimedCode = await Promotion.findOneAndUpdate(
         { _id: availableCodes[idx]._id },
@@ -126,7 +145,7 @@ const customerClaimCode = async (req, res) => {
       )
       res.status(200).json({claimedCode})
     }
-    else res.status(200).json({claimedCode: {}})
+    else res.status(200).json({ message: 'available codes not found' ,claimedCode: {} })
 
   } catch (error) {
     console.log(error)
