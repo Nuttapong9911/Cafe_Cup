@@ -43,9 +43,16 @@ const getWithSortByReach = async (req, res) => {
       return {}
     })
 
-    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+    let reviewScoreData = await topTenShops.map(shop => {
+      return {
+        _id: shop._id
+      }
+    })
+
+
+    reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
       {
-        shops: topTenShops,
+        shops: reviewScoreData,
         headers:
         {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -53,8 +60,19 @@ const getWithSortByReach = async (req, res) => {
         }
       }
     )
+    
+    // we assume that review from analytic and topTen has the same order and length
+    if(reviewScoreData.data.length !== topTenShops.length)
+      throw ({name: 'GetReviewScoreError', message: 'Review Score from analytic incorrect'}) 
 
-    res.status(200).json({status: 200, data: addReviewDetails.data})
+    for (let i = 0; i < topTenShops.length; i++) {
+      topTenShops[i] = {
+        ...topTenShops[i],
+        ...reviewScoreData.data[i]
+      }
+    }
+
+    res.status(200).json({status: 200, data: topTenShops})
   } catch (error) {
     console.log(error)
     res.status(400).json({
@@ -150,7 +168,13 @@ const get = async (req,res) => {
       },
     ])
 
-    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+    let reviewScoreData = await Result[0].data.map(shop => {
+      return {
+        _id: shop._id
+      }
+    })
+
+    reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
       {
         shops: Result[0].data,
         headers:
@@ -161,6 +185,16 @@ const get = async (req,res) => {
       }
     )
 
+    if(reviewScoreData.data.length !== Result[0].data.length)
+      throw ({name: 'GetReviewScoreError', message: 'Review Score from analytic incorrect'}) 
+
+    for (let i = 0; i < Result[0].data.length; i++) {
+      Result[0].data[i] = {
+        ...Result[0].data[i],
+        ...reviewScoreData.data[i],
+      }
+    }
+
     res.status(200).json({
       status: 200,
       metadata: {
@@ -168,7 +202,7 @@ const get = async (req,res) => {
         page,
         pageSize 
       },
-      data: addReviewDetails ? addReviewDetails.data : []
+      data: Result[0] ? Result[0].data : []
     })
   } catch (error) {
     console.log(error)

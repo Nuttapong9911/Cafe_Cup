@@ -75,7 +75,14 @@ const calculateShop = async (req, res) => {
     scores.sort((a,b) => b.score - a.score)
 
     scores = scores.slice(0,10)
-    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+
+    let reviewScoreData = scores.map(shop => {
+      return {
+        _id: shop._id
+      }
+    })
+
+    reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
       {
         shops: scores,
         headers:
@@ -86,7 +93,17 @@ const calculateShop = async (req, res) => {
       }
     )
 
-    res.status(200).json(addReviewDetails.data)
+    if(reviewScoreData.data.length !== scores.length)
+      throw ({name: 'GetReviewScoreError', message: 'Review Score from analytic incorrect'}) 
+
+    for (let i = 0; i < scores.length; i++) {
+      scores[i] = {
+        ...scores[i],
+        ...reviewScoreData.data[i],
+      }
+    }
+
+    res.status(200).json(scores)
 
   } catch (error) {
     console.log(error)
