@@ -194,7 +194,7 @@ const get = async (req,res) => {
 
     reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
       {
-        shops: Result[0].data,
+        shops: reviewScoreData,
         headers:
         {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -313,7 +313,7 @@ const deleteByID = async (req, res) => {
 }
 
 const randomInsertShop = async (req, res) => {
-  const shopNum = 510
+  const shopNum = 600
   try {
     for (let i = 501; i <= shopNum; i++) {
       const body = {

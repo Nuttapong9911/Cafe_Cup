@@ -84,7 +84,7 @@ const calculateShop = async (req, res) => {
 
     reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
       {
-        shops: scores,
+        shops: reviewScoreData,
         headers:
         {
           'Content-Type': 'application/x-www-form-urlencoded',
