@@ -419,6 +419,8 @@ router.get('/reach/getById', reachController.getById)
  */
 router.get('/reach/get', reachController.get)
 
+router.get('/reach/getTopReaches', reachController.getTopReaches)
+
 /**
  * @swagger
  * paths:

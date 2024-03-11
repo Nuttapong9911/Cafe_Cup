@@ -663,6 +663,20 @@ router.post('/shop/get', shopController.get)
 /**
  * @swagger
  * paths:
+ *   /shop/getWithSortByReach:
+ *     get:
+ *       summary: get top ten shops sort by most reaches
+ *       responses:
+ *         200:
+ *           description: return array of shops
+ *         400:
+ *           description: fetched failed
+ */
+router.get('/shop/getWithSortByReach', shopController.getWithSortByReach)
+
+/**
+ * @swagger
+ * paths:
  *   /shop/update:
  *     put:
  *       summary: edit shop

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const axios = require('axios')
 
 const Shop = require('../models/shop')
 const getRandomInt = require('../common/randomInt')
@@ -11,6 +12,44 @@ const getById = async (req,res) => {
     res.status(200).json(await Shop.findOne(req.query))
   } catch (error) {
     res.status(400).json(error)
+  }
+}
+
+const getWithSortByReach = async (req, res) => {
+  try {
+    let shops = await Shop.find()
+
+    let reaches = await axios.get(`http://analytic-node:3000/reach/getTopReaches`,
+      {
+        headers:
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      }
+    )
+
+    let topTenShops = []
+    topTenShops = await reaches.data.data.map(reach => {
+      for (let i = 0; i < shops.length; i++) {
+        if(shops[i]._id === reach._id){
+          const shop = {
+            ...reach,
+            ...shops[i]['_doc']
+          }
+          return shop
+        }
+      }
+      return {}
+    })
+
+    res.status(200).json({status: 200, data: topTenShops})
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({
+      status: 400,
+      message: error.message
+    })
   }
 }
 
@@ -547,6 +586,7 @@ const randPhotoSpots = (i) => {
 module.exports = {
   getById,
   get,
+  getWithSortByReach,
   register,
   login,
   update,
