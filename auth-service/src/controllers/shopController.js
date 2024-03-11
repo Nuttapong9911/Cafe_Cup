@@ -9,7 +9,25 @@ const { JWT_LOGIN_KEY } = require('../constants/jwt_token')
 
 const getById = async (req,res) => {
   try {
-    res.status(200).json(await Shop.findOne(req.query))
+    let shop = await Shop.findOne(req.query)
+
+    const reviewScoreData = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+      {
+        shops: [{_id: shop._id}],
+        headers:
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      }
+    )
+
+    shop = {
+      ...shop['_doc'],
+      ...reviewScoreData.data[0]
+    }
+
+    res.status(200).json(shop)
   } catch (error) {
     res.status(400).json(error)
   }
