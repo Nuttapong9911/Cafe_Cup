@@ -350,6 +350,8 @@ router.put('/review/update', reviewController.update)
  */
 router.delete('/review/delete', reviewController.deleteById)
 
+router.post('/review/getReviewScore', reviewController.getReviewScore)
+
 /**
  * @swagger
  * paths:

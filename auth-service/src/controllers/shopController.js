@@ -43,7 +43,18 @@ const getWithSortByReach = async (req, res) => {
       return {}
     })
 
-    res.status(200).json({status: 200, data: topTenShops})
+    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+      {
+        shops: topTenShops,
+        headers:
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      }
+    )
+
+    res.status(200).json({status: 200, data: addReviewDetails.data})
   } catch (error) {
     console.log(error)
     res.status(400).json({
@@ -139,6 +150,17 @@ const get = async (req,res) => {
       },
     ])
 
+    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+      {
+        shops: Result[0].data,
+        headers:
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      }
+    )
+
     res.status(200).json({
       status: 200,
       metadata: {
@@ -146,7 +168,7 @@ const get = async (req,res) => {
         page,
         pageSize 
       },
-      data: Result[0] ? Result[0].data : []
+      data: addReviewDetails ? addReviewDetails.data : []
     })
   } catch (error) {
     console.log(error)
@@ -591,7 +613,6 @@ module.exports = {
   login,
   update,
   deleteByID,
-
   randomInsertShop,
   insertTestForRcmdAlgo
 }

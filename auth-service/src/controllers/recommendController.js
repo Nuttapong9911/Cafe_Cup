@@ -1,5 +1,6 @@
 const Shop = require('../models/shop')
 const Customer = require('../models/customer')
+const axios = require('axios')
 
 const calculateShop = async (req, res) => {
 
@@ -73,7 +74,19 @@ const calculateShop = async (req, res) => {
     }
     scores.sort((a,b) => b.score - a.score)
 
-    res.status(200).json(scores.slice(0,10))
+    scores = scores.slice(0,10)
+    const addReviewDetails = await axios.post(`http://analytic-node:3000/review/getReviewScore`,
+      {
+        shops: scores,
+        headers:
+        {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': 'skip'
+        }
+      }
+    )
+
+    res.status(200).json(addReviewDetails.data)
 
   } catch (error) {
     console.log(error)

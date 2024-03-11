@@ -83,6 +83,71 @@ const deleteById = async (req, res) => {
   }
 }
 
+// get shops
+// return shops added fields reviewsNum and reviewScoreMean
+const getReviewScore = async (req, res) => {
+  try {
+    const { shops } = req.body
+    if (!shops) throw({name: 'ParameterError', message: 'Shops not found'}) 
+    if (shops.length === 0) res.status(200).json([])
+    else {
+      const reviews = await Review.aggregate([
+        {
+          $group:
+          {
+            _id: '$_shopId',
+            avgFlavour: { $avg: '$flavour' },
+            avgPlace: { $avg: '$place' },
+            avgService: { $avg: '$service' },
+            avgParking: { $avg: '$parking' },
+            avgWorthiness: { $avg: '$worthiness' },
+            totalReview: { $sum: 1 }
+          },
+        },
+        {
+          $addFields:
+          { avgTotalScore: { $divide: 
+              [ { $add:
+                  ['$avgFlavour',
+                  '$avgPlace',
+                  '$avgService',
+                  '$avgParking',
+                  '$avgWorthiness'
+                  ]
+                },
+                5
+              ]
+            }
+          }
+        },
+      ])
+  
+      const shopsWithReview = await shops.map(shop => {
+        for (let i = 0; i < reviews.length; i++) {
+          if(reviews[i]._id == shop._id || reviews[i]._id == shop._shopID ){
+            const data = {
+              ...shop,
+              reviewNum: reviews[i].totalReview,
+              reviewScoreMean: reviews[i].avgTotalScore
+            }
+            return data
+          }
+        }
+        const data = {
+          ...shop,
+          reviewNum: 0,
+          reviewScoreMean: 0
+        }
+        return data
+      })
+  
+      res.status(200).json(shopsWithReview)
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(400).json(error)
+  }
+}
 
 // for test
 const insertTest = async (req, res) => {
@@ -94,10 +159,13 @@ const insertTest = async (req, res) => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
     if (!users) throw ({ name: 'Error', message: 'No any user in database' })
-    
+    const shops = await axios.post(`http://auth-node:3002/shop/get`, { params: { pageSize: 99999 }, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
+
     for (let i = 0; i < reviewNumber; i++) {
+      const _shopIdInput = _shopId ? parseInt(_shopId, 10) : Math.floor(Math.random() * shops.data.data.length) + 1
+      
       const reviewInput = {
-        _shopId,
+        _shopId: _shopIdInput,
         _customerId: Math.floor(Math.random() * users.data.length) + 1,
         menuName: 'menu 1',
         flavour: Math.floor(Math.random() * 5) + 1,
@@ -114,6 +182,7 @@ const insertTest = async (req, res) => {
 
     res.status(200).json({ status: "ok" })
   } catch (error) {
+    console.log(error)
     res.status(400).json(error)
   }
 }
@@ -203,6 +272,7 @@ module.exports = {
   create,
   update,
   deleteById,
+  getReviewScore,
   insertTest,
   insertHighReviewTest,
   insertLowReviewTest
