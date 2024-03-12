@@ -55,8 +55,11 @@ const create = async (req, res) => {
       throw ({name: 'ParameterError', message: 'Missing required input'}) 
     }
     // [ ] get user to store age
+    const user = await axios.get(`http://auth-node:3002/customer/getById`, { params: {_id: parseInt(req.body._customerId,10)},headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'token': 'skip' }})
+    console.log(user.data)
 
-    res.status(200).json(await createReach({...req.body, timestamp: new Date()}))
+
+    res.status(200).json(await createReach({...req.body, timestamp: new Date(), customerAge: user.data.age}))
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
