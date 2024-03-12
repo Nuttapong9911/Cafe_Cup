@@ -56,6 +56,7 @@ const create = async (req, res) => {
     }
     // [ ] get user to store age
     const user = await axios.get(`http://auth-node:3002/customer/getById`, { params: {_id: parseInt(req.body._customerId,10)},headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'token': 'skip' }})
+    if (!user) throw ({name: 'ParameterError', message: 'User not found'}) 
 
     res.status(200).json(await createReach({...req.body, timestamp: new Date(), customerAge: user.data.age}))
   } catch (error) {
